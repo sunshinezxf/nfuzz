@@ -1,5 +1,10 @@
 from seed.generator.RandomGenerator import RandomGenerator
 import numpy as np
+import cv2
+
+
+# 利用opencv的图像操作
+# 算法先使用deepHunter的算法一次仿射变换多次像素值变换
 
 
 class ImageRandomGenerator(RandomGenerator):
