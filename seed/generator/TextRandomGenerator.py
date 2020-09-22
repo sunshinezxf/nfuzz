@@ -4,6 +4,7 @@ import string
 import numpy as np
 import hanlp
 
+
 # @software{hanlp2,
 #   author = {Han He},
 #   title = {{HanLP: Han Language Processing}},
