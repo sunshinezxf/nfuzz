@@ -1,15 +1,10 @@
-from keras import backend as K
-import h5py
 from keras.models import load_model
-from keras.utils import np_utils
-from keras.datasets import mnist
-import numpy as np
-import LeNet5
+from nothing import LeNet5
 from keras import Model
 
 model = load_model('model/LeNet5.h5')
 
-x_train,y_train,x_test,y_test,y_train_new,y_test_new=LeNet5.load_mnist()
+x_train,y_train,x_test,y_test,y_train_new,y_test_new= LeNet5.load_mnist()
 for layer in model.layers:
     for weight in layer.weights:
         print(weight.name,weight)
