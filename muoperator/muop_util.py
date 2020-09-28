@@ -99,7 +99,3 @@ def image_mutate(try_num, seed):
                 return I1
     return I
 
-
-img=cv2.imread(r"C:/Users/MI/PycharmProjects/tf2-yolo3/tf2-keras-yolo3/VOCdevkit/VOC2007/JPEGImages/Back_20200825103655189.jpg")
-m=ScaleMutator
-transform(0,img)
