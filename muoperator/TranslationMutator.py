@@ -4,22 +4,24 @@ import cv2
 import random
 
 
-class TransposeMutator(Mutator):
+class TranslationMutator(Mutator):
     """
-        A mutator for image transpose
+        A mutator for image translation
     """
-    def mutate(self,seed):
+    def mutate(self, seed):
         """
-            Mutation image seed, random rotation 0-360 degrees
+            平移图像， x_dis,y_dis可为负数
             :param:
                 seed -- original image seed
             :return：
                 new_seed -- a mutant image seed
         """
         height, width = seed.shape[:2]  # 获取图像的高和宽
-        center = (width / 2, height / 2)  # 默认中心
-        angle = random.randint(0, 360)
-        scale=1.0
-        M = cv2.getRotationMatrix2D(center, angle, scale)
+        x_dis = random.randint(0, width)-(width/2)
+        y_dis = random.randint(0, height)-(height/2)
+        M = np.array([
+            [1, 0, x_dis],
+            [0, 1, y_dis]
+        ], dtype=np.float32)
         mutant = cv2.warpAffine(seed, M, (height, width))
         return mutant
