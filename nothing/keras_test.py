@@ -122,7 +122,7 @@ def load_neuron(model,x_input):
         # 得到各层各个神经元最大值和最小值
         layer_boundary = utils.get_boundary(reverse_layer_output)
 
-        # 将最大值最小值保存为csv文件
+        # 将最大值最小值保存为csv文件 todo:具体存放路径待定
         layer_boundary_list = utils.save_boundary_list(layer_boundary, layer_name + '_boundary.csv')
         csv_path.append(layer_name + '_boundary.csv')
 
