@@ -27,7 +27,6 @@ class Mutator(metaclass=abc.ABCMeta):
 
     """仿射变换其三个参数分别为:输入图像,变换矩阵,输出图像大小
     deepHunter中选择四种：平移、缩放、剪切、旋转
-    x=x_train[0]，输入的图像
     """
 
 
