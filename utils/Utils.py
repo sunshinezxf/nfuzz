@@ -52,6 +52,19 @@ def save_boundary_list(li, path):
         for row in li:
             writer.writerow(row)
 
+# 将各层神经元边界输出保存到csv文件中
+def save_layer_output_list(li, path):
+    """
+    将各层神经元输出保存到csv文件中
+    :param li:待保存的列表
+    :param path:保存的路径
+    :return:
+    """
+    with open(path, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        for row in li:
+            writer.writerow(row)
+
 
 # 从csv文件中获取各层个神经元边界值（上界和下界）
 def get_boundary_from_file(path):
@@ -78,6 +91,31 @@ def get_boundary_from_file(path):
     return boundary_list
 
 
+# 从csv文件中获取各层个神经元输出
+def get_output_from_file(path):
+    """
+    从csv文件中获取各层个神经元输出
+    :param path: 文件的路径
+    :return: 包含神经元信息的列表
+    """
+    with open(path, 'r') as csvfile:
+        data = csvfile.readlines()
+
+    output_list = []
+    for i in range(len(data)):
+        substr = data[i]
+        li = substr.split(',')
+        strr = li[-1]
+        lii = strr.split('\n')
+        li[-1] = lii[0]
+        for j in range(len(li)):
+            li[j] = float(li[j])
+
+        output_list.append(li)
+
+    return output_list
+
+
 # 获取多个csv文件
 def get_all_boundary_file(path_list):
     """
@@ -91,6 +129,21 @@ def get_all_boundary_file(path_list):
         all_boundary_list.append(boundary_list)
 
     return all_boundary_list
+
+
+# 获取多个csv文件
+def get_all_output_file(path_list):
+    """
+    获取多个csv文件
+    :param path_list:
+    :return:多个csv文件中列表组成的列表
+    """
+    all_output_list = []
+    for i in range(len(path_list)):
+        boundary_list = get_output_from_file(path_list[i])
+        all_output_list.append(boundary_list)
+
+    return all_output_list
 
 
 # 将神经元信息列表转换为k-multisection

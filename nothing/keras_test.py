@@ -114,17 +114,20 @@ def load_neuron(model,x_input):
         layer_output = layer_model.predict(x_input)
         print(layer_name)
         print(layer_output)
-        print(len(layer_output), len(layer_output[0]))
+        print(len(layer_output), len(layer_output[0]))  # 二维数组
 
         # 翻转矩阵
-        reverse_layer_output = utils.reverse_list(layer_output)
+        # reverse_layer_output = utils.reverse_list(layer_output)
 
         # 得到各层各个神经元最大值和最小值
-        layer_boundary = utils.get_boundary(reverse_layer_output)
+        # layer_boundary = utils.get_boundary(reverse_layer_output)
 
         # 将最大值最小值保存为csv文件 todo:具体存放路径待定
-        layer_boundary_list = utils.save_boundary_list(layer_boundary, layer_name + '_boundary.csv')
-        csv_path.append(layer_name + '_boundary.csv')
+        # layer_boundary_list = utils.save_boundary_list(layer_boundary, layer_name + '_boundary.csv')
+        # csv_path.append(layer_name + '_boundary.csv')
+
+        layer_output_list=utils.save_layer_output_list(layer_output,layer_name+'_output.csv')
+        csv_path.append(layer_name+'_output.csv')
 
         # print(layer_name + "_boundary_list", len(layer_boundary_list), ":::", len(layer_boundary_list[0]))
 
@@ -145,25 +148,29 @@ def load_neuron(model,x_input):
 
 csv_path,input_list=load_neuron(model,x_test)
 
-time1 = time.time()
-coverage1 = coverage_functions.k_multisection_neuron_coverage(10,csv_path,input_list)
-print("k_multisection coverage:", coverage1)
+time0=time.time()
+coverage0=coverage_functions.neuron_coverage(csv_path)
+print("basic coverage:",coverage0)
 
-time2 = time.time()
-coverage2 = coverage_functions.neuron_boundary_coverage(csv_path,input_list)
-print("neuron boundary coverage:", coverage2)
-
-
-time3 = time.time()
-coverage3 = coverage_functions.strong_neuron_activation_coverage(csv_path,input_list)
-print("strong neuron activation coverage:", coverage3)
-
-
-time4 = time.time()
-coverage4 = coverage_functions.top_k_neuron_coverage(2, input_list)
-print("top-k neuron coverage:", coverage4)
-
-
-time5 = time.time()
-coverage5 = coverage_functions.top_neuron_patterns(2, input_list)
-print("top-k patterns:", coverage5)
+# time1 = time.time()
+# coverage1 = coverage_functions.k_multisection_neuron_coverage(10,csv_path,input_list)
+# print("k_multisection coverage:", coverage1)
+#
+# time2 = time.time()
+# coverage2 = coverage_functions.neuron_boundary_coverage(csv_path,input_list)
+# print("neuron boundary coverage:", coverage2)
+#
+#
+# time3 = time.time()
+# coverage3 = coverage_functions.strong_neuron_activation_coverage(csv_path,input_list)
+# print("strong neuron activation coverage:", coverage3)
+#
+#
+# time4 = time.time()
+# coverage4 = coverage_functions.top_k_neuron_coverage(2, input_list)
+# print("top-k neuron coverage:", coverage4)
+#
+#
+# time5 = time.time()
+# coverage5 = coverage_functions.top_neuron_patterns(2, input_list)
+# print("top-k patterns:", coverage5)

@@ -4,7 +4,24 @@ import utils.Utils as utils
 import copy
 from scipy import special
 
+def neuron_coverage(path_list,threshold=0.25):
+    coveraged_sum = 0
+    coverage_sum = 0
 
+    all_output_list = utils.get_all_output_file(path_list)
+    for file in all_output_list:
+        for layer in file:
+            for i in range(len(layer)):
+                if layer[i]>=threshold:
+                    coveraged_sum+=1
+                coverage_sum+=1
+
+    coverage = coveraged_sum / coverage_sum
+
+    return coverage
+
+
+# todo:只要最简单的就行了
 # k-multisection Neuron Coverage
 def k_multisection_neuron_coverage(k, path_list, all_input_list):
     """
