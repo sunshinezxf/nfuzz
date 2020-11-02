@@ -1,12 +1,7 @@
 from seed.generator.RandomGenerator import RandomGenerator
 import numpy as np
+import os
 import cv2
-
-
-
-# 利用opencv的图像操作
-# 算法先使用deepHunter的算法一次仿射变换多次像素值变换
-
 
 class ImageRandomGenerator(RandomGenerator):
     """
@@ -26,4 +21,10 @@ class ImageRandomGenerator(RandomGenerator):
             :return：
                 seed -- a randomly generated seed
         """
-        return np.random.rand(*self.shape) * 255
+        randomByteArray = bytearray(os.urandom(120000))
+        flatNumpyArray = np.array(randomByteArray)
+
+        bgrImage = flatNumpyArray.reshape(self.shape)
+        # grayImage = flatNumpyArray.reshape(300, 400) # 灰度
+
+        return bgrImage
