@@ -1,5 +1,3 @@
-import jpype
-from jpype import *
 from muoperator.Mutator import Mutator
 
 

@@ -24,12 +24,12 @@ def multiple_back_translation(origin):
 class BacKTranslationMutator(Mutator):
     """
         回译:
-        seed为文本
+        seed为文本,默认为中文
         用googletrans进行翻译和回译
         当回译结果与原种子一样时，尝试复杂的回译
         复杂包括：
-            更换另一种语种
-            不同语种多次回译
+            更换另一种语种，默认fr
+            不同语种多次回译，默认zh->en->fr->zh
     """
 
     def mutate(self, seed):
