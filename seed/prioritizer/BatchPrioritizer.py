@@ -14,6 +14,6 @@ class BatchPrioritizer(metaclass=abc.ABCMeta):
                 p_min --  the minimum probability
                 gamma -- weight
             :return
-                probability -- probality of batch be selected
+                probability -- probability of batch be selected
         """
         pass

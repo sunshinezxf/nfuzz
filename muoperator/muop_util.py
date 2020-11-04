@@ -47,7 +47,7 @@ def is_satisfied(seed, mutant):
         else:
             return False
 
-
+# 进行变换
 def transform(state, seed):
     if state == 0:  # 缩放
         return ScaleMutator().mutate(seed)
@@ -64,7 +64,7 @@ def transform(state, seed):
     if state == 6:  # 对比度/亮度
         return ContrastMutator.mutate(seed)
 
-
+# 随机选择一种算子进行变异
 def random_pick(state):
     if state == 0:  # 可用选择一次仿射
         s = random.randint(0, 6)
@@ -73,7 +73,7 @@ def random_pick(state):
         s = random.randint(4, 6)
         return s
 
-# deepHunter alg2
+# deepHunter alg2 图像变异
 def image_mutate(try_num, seed):
     """
     :param try_num: 最大尝试次数

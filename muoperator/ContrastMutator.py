@@ -10,7 +10,7 @@ class ContrastMutator(Mutator):
     """
     def mutate(self, seed):
         """
-            Mutation image seed, random rotation 0-360 degrees
+            改变图像对比度/亮度
             :param:
                 seed -- original image seed
             :return：
