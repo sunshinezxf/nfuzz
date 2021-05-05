@@ -16,6 +16,7 @@ class TransposeMutator(Mutator):
             :return：
                 new_seed -- a mutant image seed
         """
+        # print(seed.shape)
         height, width = seed.shape[:2]  # 获取图像的高和宽
         center = (width / 2, height / 2)  # 默认中心
         angle = random.randint(0, 360)

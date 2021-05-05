@@ -10,7 +10,14 @@ class BaseSeedQueue(SeedQueue):
     """
 
     # The queue to store seeds
-    queue = queue.Queue()
+
+    def __init__(self):
+        self.queue = queue.Queue()
+
+    def __init__(self, seeds):
+        self.queue = queue.Queue()
+        for seed in seeds:
+            self.push(seed)
 
     def push(self, seed):
         """

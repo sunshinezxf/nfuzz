@@ -19,7 +19,7 @@ class ScaleMutator(Mutator):
             :return：
                 new_seed -- a mutant image seed
         """
-        print("called")
+        # print(seed.shape)
         height, width = seed.shape[:2]  # 获取图像的高和宽
         x_rate = random.random() * 5
         y_rate = random.random() * 5

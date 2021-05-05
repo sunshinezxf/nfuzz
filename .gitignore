@@ -2,3 +2,7 @@
 *.pyc
 *.jpg
 *.png
+*.h5
+*.gz
+*.idx3-ubyte
+*.idx1-ubyte

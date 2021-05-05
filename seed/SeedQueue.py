@@ -5,6 +5,9 @@ class SeedQueue(metaclass=abc.ABCMeta):
     """
         An interface for operate of seed_queue
     """
+
+
+
     def push(self, seed):
         """
             Push the seed into queue, the type of seed must be 'numpy.ndarray'

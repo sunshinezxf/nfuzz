@@ -7,4 +7,9 @@ k-多节神经元覆盖 k-Multisection Neuron Coverage (KMNC)
 强神经元激活覆盖 Strong Neuron Activation Coverage (SNAC)
 Top-k神经元覆盖 Top-k Neuron Coverage (TKNC)
 
-![image-20200814172936466](C:\Users\MI\AppData\Roaming\Typora\typora-user-images\image-20200814172936466.png)
+![img_1.png](img_1.png)
+![img.png](img.png)
+
+问题：
+1.如何用覆盖率来引导新的变异？（循环桶？
+2.是剔除或保留一个种子还是一整个batch？

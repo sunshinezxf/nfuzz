@@ -13,7 +13,9 @@ from seed.prioritizer.BaseBatchPrioritizer import BaseBatchPrioritizer
 用来存放待fuzz的种子
 '''
 
+
 class BatchPool:
+
     # SeedQueue
     seed_queue = None
 
@@ -46,9 +48,10 @@ class BatchPool:
         self.batch_size = batch_size
         self.seed_queue = seed_queue
 
-    def preprocess(self):
+    def pre_process(self):
         """
             Pull seeds from seed_queue and package into batch
+            把种子分批放入batch_buffer
         """
         while not self.seed_queue.empty():
             self.batch_buffer.append(self.seed_queue.pop())
@@ -63,6 +66,8 @@ class BatchPool:
     def select_next(self):
         """
             Random select an element from pool
+            从batch pool中随机选择一个batch。
+            变异后的batch如何加入原seed？
             :return
                 batch -- a batch of seeds
             :except
@@ -118,9 +123,10 @@ class BatchPool:
                 cv2.imwrite(path0, img)
         return end - start_with
 
-    def add_seed(self, path_list):
+    def add_seed_by_path(self, path_list):
         """
             add seeds into seed queue
+            根据路径
             :param
                 path_list -- seed path list
             :return
@@ -131,6 +137,26 @@ class BatchPool:
             self.seed_queue.push(path_2_ndarray_convert(path))
             num = num + 1
         return num
+
+    def add_seed(self,seed):
+        """
+        添加单个种子
+        :param seed:
+        :return:
+        """
+        self.seed_queue.push(seed)
+
+    def add_batch(self,batch):
+        """
+        把变异后的种子加回来
+        :param batch:
+        :return:
+        """
+        element = {
+            "fuzzed_times": 0,
+            "batch": np.array(batch)
+        }
+        self.pool.append(element)
 
     def random_generate(self, number, generator):
         """
@@ -147,3 +173,6 @@ class BatchPool:
             self.seed_queue.push(seed)
             seed_list.append(seed)
         return seed_list
+
+    def test(self):
+        print("test")

@@ -8,3 +8,4 @@ class BaseBatchPrioritizer(BatchPrioritizer):
         """
         P = 1 - fuzzed_times / gamma
         return max(P, p_min)
+

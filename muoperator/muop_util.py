@@ -25,6 +25,7 @@ BETA = 0.2
 
 # 判断mutant是否有意义
 def is_satisfied(seed, mutant):
+    # print('is satisfied??',seed.shape)
     height, width = seed.shape[:2]  # 获取图像的高和宽
     l0, l_inf = 0, 0
     for row in range(height):  # 遍历高
@@ -54,20 +55,24 @@ def transform(state, seed):
     if state == 0:  # 缩放
         return ScaleMutator().mutate(seed)
     if state == 1:  # 平移
-        return TranslationMutator.mutate(seed)
+        return TranslationMutator().mutate(seed)
     if state == 2:  # 剪裁
-        return ShearMutator.mutate(seed)
+        return ShearMutator().mutate(seed)
     if state == 3:  # 旋转
-        return TransposeMutator.mutate(seed)
+        return TransposeMutator().mutate(seed)
     if state == 4:  # 噪声
-        return NoiseMutator.mutate(seed)
+        return NoiseMutator().mutate(seed)
     if state == 5:  # 模糊
-        return BlurMutator.mutate(seed)
+        return BlurMutator().mutate(seed)
     if state == 6:  # 对比度/亮度
-        return ContrastMutator.mutate(seed)
+        return ContrastMutator().mutate(seed)
 
-# 随机选择一种算子进行变异
 def random_pick(state):
+    """
+    随机选择一种算子进行变异
+    :param state:
+    :return:
+    """
     if state == 0:  # 可用选择一次仿射
         s = random.randint(0, 6)
         return s
@@ -75,9 +80,9 @@ def random_pick(state):
         s = random.randint(4, 6)
         return s
 
-# deepHunter alg2 图像变异
 def image_mutate(try_num, seed):
     """
+    deepHunter alg2 图像变异
     :param try_num: 最大尝试次数
     :param seed: 初始种子(单个图)
     :return: 变异成功的新种子或者原种子
@@ -101,3 +106,14 @@ def image_mutate(try_num, seed):
                 return I1
     return I
 
+def batch_mutate(batch):
+    """
+    返回变异完的一批种子
+    :param batch:
+    :return:
+    """
+    ret=[]
+    for img in batch:
+        I=image_mutate(3,img)
+        ret.append(I)
+    return ret

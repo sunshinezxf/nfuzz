@@ -23,6 +23,9 @@ class BlurMutator(Mutator):
                 new_seed -- a mutant image seed
         """
         ksize = random.randint(1, 5)
+        # kszie似乎只支持奇数
+        if ksize%2==0:
+            ksize=ksize+1
         sigma = random.random() * 10
         mutant = cv2.GaussianBlur(seed, (ksize, ksize), sigma)
         return mutant
