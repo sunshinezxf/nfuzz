@@ -1,4 +1,4 @@
-# 工具类
+# 工具类 不存csv直接使用
 
 import csv
 import numpy as np
@@ -73,7 +73,7 @@ def get_boundary_from_file(path):
     :param path: 文件的路径
     :return: 包含神经元信息(上界、下界）的列表
     """
-    with open(path, 'r') as csvfile:
+    with open('./csv/'+path, 'r') as csvfile:
         data = csvfile.readlines()
 
     boundary_list = []

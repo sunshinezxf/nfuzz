@@ -1,12 +1,10 @@
 import os
 import random
 import uuid
-
 import cv2
 import numpy as np
 from pathlib import Path
 from myUtils.ConverterUtils import path_2_ndarray_convert
-
 from seed.prioritizer.BaseBatchPrioritizer import BaseBatchPrioritizer
 
 '''
@@ -15,7 +13,6 @@ from seed.prioritizer.BaseBatchPrioritizer import BaseBatchPrioritizer
 
 
 class BatchPool:
-
     # SeedQueue
     seed_queue = None
 
@@ -67,6 +64,7 @@ class BatchPool:
         """
             Random select an element from pool
             从batch pool中随机选择一个batch。
+            这里不采样了，直接返回该batch的所有元素
             变异后的batch如何加入原seed？
             :return
                 batch -- a batch of seeds
@@ -84,6 +82,20 @@ class BatchPool:
                 element["fuzzed_times"] = element["fuzzed_times"] + 1
                 self.gamma = max(element["fuzzed_times"], self.gamma)
                 return element["batch"]
+
+    def get_pool(self):
+        """
+        返回pool中的所有种子
+        :return: 一维的种子列表
+        """
+
+        ret = []
+
+        for batch in self.pool:
+            for seed in batch:
+                ret.append(seed)
+
+        return ret
 
     def save(self, path, start_with=0, save_size=-1):
         """
@@ -138,7 +150,7 @@ class BatchPool:
             num = num + 1
         return num
 
-    def add_seed(self,seed):
+    def add_seed(self, seed):
         """
         添加单个种子
         :param seed:
@@ -146,7 +158,7 @@ class BatchPool:
         """
         self.seed_queue.push(seed)
 
-    def add_batch(self,batch):
+    def add_batch(self, batch):
         """
         把变异后的种子加回来
         :param batch:
@@ -174,5 +186,6 @@ class BatchPool:
             seed_list.append(seed)
         return seed_list
 
-    def test(self):
+    @staticmethod
+    def test():
         print("test")

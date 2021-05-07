@@ -1,5 +1,5 @@
-from myUtils import ConverterUtils as coverage_functions
-from myUtils import Utils as utils
+from myUtils import CoverageUtils as coverage_functions
+from myUtils import csvUtils as utils
 import numpy as np
 from scipy import special
 import copy
@@ -40,6 +40,7 @@ def mutate(element):
 
 
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
+print('load mnist data----------')
 
 # print(x_train.shape)
 # print(x_test.shape)
@@ -75,35 +76,38 @@ for i in range(len(x_test)):
 x_test = x_test.tolist()
 y_test = y_test.tolist()
 
-# mutated_image_data = []
-for i in range(len(data)):
-    image_info = data[i]
-    # mutated_image_info = do_basic_mutations(image_info)
-    for itr in range(10):
-        # image_info = do_basic_mutations(image_info)
-        image_info = mutate(image_info)
-    # x_test.append(mutated_image_info[0])
-    # y_test.append(mutated_image_info[1])
-    mutated_image_info = image_info
-    x_test[i] = mutated_image_info[0]
-    y_test[i] = mutated_image_info[1]
-    # print(len(mutated_image_info[0]))
-    # print(mutated_image_info[0])
-    # print(len(mutated_image_info[1]))
-    # print(mutated_image_info[1])
+# # mutated_image_data = []
+# for i in range(len(data)):
+#     image_info = data[i]
+#     # mutated_image_info = do_basic_mutations(image_info)
+#     for itr in range(10):
+#         # image_info = do_basic_mutations(image_info)
+#         image_info = mutate(image_info)
+#     # x_test.append(mutated_image_info[0])
+#     # y_test.append(mutated_image_info[1])
+#     mutated_image_info = image_info
+#     x_test[i] = mutated_image_info[0]
+#     y_test[i] = mutated_image_info[1]
+#     # print(len(mutated_image_info[0]))
+#     # print(mutated_image_info[0])
+#     # print(len(mutated_image_info[1]))
+#     # print(mutated_image_info[1])
 
 x_test = np.array(x_test)
 y_test = np.array(y_test)
+# print(x_test.shape)
+# x_test=x_test.reshape(10000,28,28,1)
+# 解决方法：原因是输入的第一个dimension是bachsize，所以需要将数据reshape为(1，X, X, X)。
 
 # 载入模型
 # model = load_model('11.h5')
-model = load_model('model_weights.h5')
+
 
 
 # print(model.get_config())
 
 
-def load_neuron(model, x_input):
+def load_neuron(path, x_input):
     """
         计算k-multisection覆盖率
         :param model: 待测模型
@@ -111,9 +115,17 @@ def load_neuron(model, x_input):
         :return: csv_path:存放神经元上下界信息的路径列表（多个csv文件)
                 input_list : 待计算覆盖率的神经元信息列表（测试数据形成的神经元信息）
     """
+    model = load_model(path)
+
     config = model.get_config()  # 详细信息
 
     layers = config['layers']  # 各层的信息
+
+    print('load model successfully....')
+    print('config--------')
+    print(config)
+    print('layers------')
+    print(layers)
 
     csv_path = []  # 存放神经元上下界信息的路径列表（多个csv文件)
     input_list = []  # 待计算覆盖率的神经元信息列表（测试数据形成的神经元信息）
@@ -130,16 +142,16 @@ def load_neuron(model, x_input):
         print(len(layer_output), len(layer_output[0]))  # 二维数组
 
         # 翻转矩阵
-        # reverse_layer_output = utils.reverse_list(layer_output)
+        reverse_layer_output = utils.reverse_list(layer_output)
 
         # 得到各层各个神经元最大值和最小值
-        # layer_boundary = utils.get_boundary(reverse_layer_output)
+        layer_boundary = utils.get_boundary(reverse_layer_output)
 
         # 将最大值最小值保存为csv文件 todo:具体存放路径待定
-        # layer_boundary_list = utils.save_boundary_list(layer_boundary, layer_name + '_boundary.csv')
-        # csv_path.append(layer_name + '_boundary.csv')
+        layer_boundary_list = utils.save_boundary_list(layer_boundary,'./csv/'+ layer_name + '_boundary.csv')
+        csv_path.append(layer_name + '_boundary.csv')
 
-        layer_output_list = utils.save_layer_output_list(layer_output, layer_name + '_output.csv')
+        layer_output_list = utils.save_layer_output_list(layer_output, './csv/'+layer_name + '_output.csv')
         csv_path.append(layer_name + '_output.csv')
 
         # print(layer_name + "_boundary_list", len(layer_boundary_list), ":::", len(layer_boundary_list[0]))
@@ -156,14 +168,15 @@ def load_neuron(model, x_input):
 
             input_list.append(data_size_input_list)
 
+    print('execute---------')
     return csv_path, input_list
 
+# x_test=x_test.reshape(-1,28,28,1)
+# csv_path, input_list = load_neuron('../model/LeNet5.h5', x_test)
 
-csv_path, input_list = load_neuron(model, x_test)
-
-time0 = time.time()
-coverage0 = coverage_functions.neuron_coverage(csv_path)
-print("basic coverage:", coverage0)
+# time0 = time.time()
+# coverage0 = coverage_functions.neuron_coverage(csv_path)
+# print("basic coverage:", coverage0)
 
 # time1 = time.time()
 # coverage1 = coverage_functions.k_multisection_neuron_coverage(10,csv_path,input_list)

@@ -22,9 +22,21 @@ ALPHA = 0.02
 BETA = 0.2
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
+def is_failed_test(I1):
+    """
+    判断是否是failed test
+    :param I1:
+    :return:
+    """
+    return False
 
-# 判断mutant是否有意义
 def is_satisfied(seed, mutant):
+    """
+    判断mutant是否有意义
+    :param seed:
+    :param mutant:
+    :return:
+    """
     # print('is satisfied??',seed.shape)
     height, width = seed.shape[:2]  # 获取图像的高和宽
     l0, l_inf = 0, 0
@@ -35,7 +47,7 @@ def is_satisfied(seed, mutant):
             if p_seed != p_mutant:  # 像素值发生改变
                 l0 = l0 + 1
 
-            minus = abs(p_seed - p_mutant)
+            minus = abs(int(p_seed) - int(p_mutant))
             if minus > l_inf:
                 l_inf = minus  # 像素值发生的最大改变
 
@@ -99,7 +111,12 @@ def image_mutate(try_num, seed):
 
         I1 = transform(t, I)
 
-        if is_satisfied(I01, I1):
+        if is_failed_test(I1):
+            # todo:加入失败集
+
+            pass
+
+        elif is_satisfied(I01, I1):
             if t > 4:
                 state = 1
                 I01 = transform(t, I0)

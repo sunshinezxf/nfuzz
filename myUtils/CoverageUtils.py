@@ -1,14 +1,38 @@
 #  覆盖计算方法
 
-import Utils as utils
+from myUtils import csvUtils as uutils
 import copy
 from scipy import special
 
-def neuron_coverage(path_list,threshold=0.25):
+# def neuron_coverage(path_list,threshold=0.25):
+#     coveraged_sum = 0
+#     coverage_sum = 0
+#
+#     all_output_list = uutils.get_all_output_file(path_list)
+#     for file in all_output_list:
+#         for layer in file:
+#             for i in range(len(layer)):
+#                 if layer[i]>=threshold:
+#                     coveraged_sum+=1
+#                 coverage_sum+=1
+#
+#     coverage = coveraged_sum / coverage_sum
+#
+#     return coverage
+
+def neuron_coverage(all_output_list,threshold=0.25):
+    """
+    计算所有层的覆盖率
+    :param path_list:
+    :param threshold:
+    :return:
+    """
+
+
     coveraged_sum = 0
     coverage_sum = 0
 
-    all_output_list = utils.get_all_output_file(path_list)
+    # all_output_list = uutils.get_all_output_file(path_list)
     for file in all_output_list:
         for layer in file:
             for i in range(len(layer)):
@@ -32,11 +56,12 @@ def k_multisection_neuron_coverage(k, path_list, all_input_list):
     :return: 计算得到的覆盖率
     """
     # all_boundary_list = path_list
-    all_boundary_list = utils.get_all_boundary_file(path_list)
-    output_list = utils.covert_to_k_multisection(k, all_boundary_list)  # 将每个神经元信息转化成k个小的上下界信息
-    all_label_list = utils.get_label_list(output_list)  # 标签列表，用于计算覆盖率
+    all_boundary_list = uutils.get_all_boundary_file(path_list)
 
-    k_multisection_sum = utils.k_multisection_sum(output_list)  # 总神经元个数N * k
+    output_list = uutils.covert_to_k_multisection(k, all_boundary_list)  # 将每个神经元信息转化成k个小的上下界信息
+    all_label_list = uutils.get_label_list(output_list)  # 标签列表，用于计算覆盖率
+
+    k_multisection_sum = uutils.k_multisection_sum(output_list)  # 总神经元个数N * k
     coveraged_sum = 0  # 被覆盖的个数
     for data_size in range(len(all_input_list)):
         input_list = all_input_list[data_size]
@@ -51,8 +76,8 @@ def k_multisection_neuron_coverage(k, path_list, all_input_list):
                 # else:
                 # print("未覆盖")
                 # print(all_label_list[layer][size])
-                if utils.is_neuron_coveraged(neuron_info_list, boundary_info_list)[0]:
-                    index = utils.is_neuron_coveraged(neuron_info_list, boundary_info_list)[1]
+                if uutils.is_neuron_coveraged(neuron_info_list, boundary_info_list)[0]:
+                    index = uutils.is_neuron_coveraged(neuron_info_list, boundary_info_list)[1]
                     all_label_list[layer][size][index][0] = 1
 
     for layer in range(len(all_label_list)):
@@ -80,8 +105,8 @@ def neuron_boundary_coverage(path_list, all_input_list):
     coveraged_sum = 0
     coverage_sum = 0
 
-    all_boundary_list = utils.get_all_boundary_file(path_list)
-    neuron_boundary_label_list = utils.get_boundary_coverage_label_list(all_boundary_list)
+    all_boundary_list = uutils.get_all_boundary_file(path_list)
+    neuron_boundary_label_list = uutils.get_boundary_coverage_label_list(all_boundary_list)
 
     for data_size in range(len(all_input_list)):
         input_list = all_input_list[data_size]
@@ -90,7 +115,7 @@ def neuron_boundary_coverage(path_list, all_input_list):
             for size in range(len(layer_input_list)):
                 neuron_input_list = layer_input_list[size]
                 boundary_list = all_boundary_list[layer][size]
-                result, flag = utils.is_upper_or_lower(neuron_input_list, boundary_list)
+                result, flag = uutils.is_upper_or_lower(neuron_input_list, boundary_list)
                 if result is True and flag == 0:
                     neuron_boundary_label_list[layer][size][0][0] = 1
                 if result is True and flag == 1:
@@ -124,8 +149,8 @@ def strong_neuron_activation_coverage(path_list, all_input_list):
     coveraged_sum = 0
     coverage_sum = 0
 
-    all_boundary_list = utils.get_all_boundary_file(path_list)
-    neuron_boundary_label_list = utils.get_boundary_coverage_label_list(all_boundary_list)
+    all_boundary_list = uutils.get_all_boundary_file(path_list)
+    neuron_boundary_label_list = uutils.get_boundary_coverage_label_list(all_boundary_list)
 
     for data_size in range(len(all_input_list)):
         input_list = all_input_list[data_size]
@@ -134,7 +159,7 @@ def strong_neuron_activation_coverage(path_list, all_input_list):
             for size in range(len(layer_input_list)):
                 neuron_input_list = layer_input_list[size]
                 boundary_list = all_boundary_list[layer][size]
-                result, flag = utils.is_upper_or_lower(neuron_input_list, boundary_list)
+                result, flag = uutils.is_upper_or_lower(neuron_input_list, boundary_list)
                 if result is True and flag == 1:
                     neuron_boundary_label_list[layer][size][1][0] = 1
 
@@ -166,13 +191,13 @@ def top_k_neuron_coverage(k, all_input_list):
     coveraged_sum = 0
     coverage_sum = 0
 
-    top_k_neuron_label_list = utils.get_top_k_neuron_label_list(all_input_list)
+    top_k_neuron_label_list = uutils.get_top_k_neuron_label_list(all_input_list)
 
     for data_size in range(len(all_input_list)):
         input_list = all_input_list[data_size]
         for layer in range(len(input_list)):
             layer_list = input_list[layer]
-            top_k_index_list = utils.get_top_k_index_list(k, layer_list)
+            top_k_index_list = uutils.get_top_k_index_list(k, layer_list)
             layer_top_k_neuron_label_list = top_k_neuron_label_list[layer]
             for ite in range(len(top_k_index_list)):
                 layer_top_k_neuron_label_list[top_k_index_list[ite]][0] = 1
@@ -207,7 +232,7 @@ def top_neuron_patterns(k, all_input_list):
         neuron_patterns = []
         for layer in range(len(input_list)):
             layer_list = input_list[layer]
-            top_k_index_list = utils.get_top_k_index_list(k, layer_list)
+            top_k_index_list = uutils.get_top_k_index_list(k, layer_list)
             neuron_patterns.append(top_k_index_list)
         if neuron_patterns not in coveraged_patterns:
             coveraged_patterns.append(neuron_patterns)

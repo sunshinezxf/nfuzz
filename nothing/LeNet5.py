@@ -42,6 +42,6 @@ print(loss,accuracy)
 print(history.history)
 
 # -> https://github.com/keras-team/keras/issues/2378
-model.save("model/LeNet5.h5",overwrite=True)
+model.save("../model/LeNet5.h5",overwrite=True)
 
 
