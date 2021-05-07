@@ -44,18 +44,20 @@ class BatchPool:
         self.p_min = p_min
         self.batch_size = batch_size
         self.seed_queue = seed_queue
+        self.pre_process()
 
     def pre_process(self):
         """
             Pull seeds from seed_queue and package into batch
-            把种子分批放入batch_buffer
+            把种子分批放入batch_buffer，存到pool
         """
         while not self.seed_queue.empty():
             self.batch_buffer.append(self.seed_queue.pop())
             if len(self.batch_buffer) == self.batch_size:
                 element = {
                     "fuzzed_times": 0,
-                    "batch": np.array(self.batch_buffer)
+                    # "batch": np.array(self.batch_buffer)
+                    "batch": self.batch_buffer
                 }
                 self.pool.append(element)
                 self.batch_buffer = []
@@ -78,7 +80,7 @@ class BatchPool:
             element = random.choice(self.pool)
             probability = self.batch_prioritization.probability(element["fuzzed_times"], self.p_min, self.gamma)
 
-            if probability >= random.random():
+            if probability >= random.random():# todo 意义何在
                 element["fuzzed_times"] = element["fuzzed_times"] + 1
                 self.gamma = max(element["fuzzed_times"], self.gamma)
                 return element["batch"]
@@ -166,7 +168,8 @@ class BatchPool:
         """
         element = {
             "fuzzed_times": 0,
-            "batch": np.array(batch)
+            # "batch": np.array(batch)
+            "batch": batch
         }
         self.pool.append(element)
 

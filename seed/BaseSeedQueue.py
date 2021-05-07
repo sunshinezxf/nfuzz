@@ -27,8 +27,8 @@ class BaseSeedQueue(SeedQueue):
             :except：
                 TypeError -- type not match
         """
-        if not isinstance(seed, numpy.ndarray):
-            raise TypeError("The type of seed must be 'numpy.ndarray'.")
+        # if not isinstance(seed, numpy.ndarray):
+        #     raise TypeError("The type of seed must be 'numpy.ndarray'.")
         self.queue.put(seed)
 
     def pop(self):

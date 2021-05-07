@@ -140,8 +140,8 @@ def load_neuron(path, x_input):
         # 获取各层输出信息
         layer_output = layer_model.predict(x_input)
         all_output_list.append(layer_output)
-        print(layer_name)
-        print(layer_output)
+        print(layer_name,layer_output.shape)
+        # print(layer_output)
         print(len(layer_output), len(layer_output[0]))  # 二维数组
 
         # 翻转矩阵
@@ -176,7 +176,7 @@ def load_neuron(path, x_input):
     return all_layer_boundary,all_output_list, input_list
 
 x_test=x_test.reshape(-1,28,28,1)
-all_layer_boundary,all_output_list, input_list = load_neuron('../model/LeNet5.h5', x_test)
+all_layer_boundary,all_output_list, input_list = load_neuron('./model/LeNet5.h5', x_test)
 
 time0 = time.time()
 coverage0 = coverage_functions.neuron_coverage(all_output_list)

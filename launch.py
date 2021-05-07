@@ -19,6 +19,7 @@ from keras.layers import Dense, Dropout, Flatten, Activation
 from keras.layers import Conv2D, MaxPooling2D
 from keras.utils import np_utils
 from nothing import keras_test
+from myUtils import coverageMetrics
 from myUtils import CoverageUtils as coverage_functions
 
 # alpha>0,beta<1,论文中只字未提如何选取具体的值，应该是看效果吧
@@ -38,12 +39,15 @@ def load_seed():
     return x_train, y_train, x_test, y_test
 
 
-def preProcess(seeds):
+def preProcess(x_train,y_train):
     """
-    对种子预处理
+    对种子进行预处理预处理
     :return:
     """
-
+    seeds=[]
+    for i in range(len(x_train)):
+        seed=(x_train[0],y_train[0])
+        seeds.append(seed)
     return seeds
 
 
@@ -191,7 +195,7 @@ def main():
     x_train, y_train, x_test, y_test = load_seed()
 
     # 预处理
-    seeds = preProcess(x_train)
+    seeds = preProcess(x_train,y_train)
 
     # 放入队列
     seed_queue = sq.BaseSeedQueue(seeds)
@@ -203,7 +207,8 @@ def main():
     batch_pool = bp.BatchPool(seed_queue=seed_queue, batch_size=32, p_min=0.1, gamma=1,
                            batch_prioritization=batch_prioritizer)
 
-    batch_pool.pre_process()
+    x_mutant=[]
+    y_mutant=[]
 
     for i in range(10):
         # 随机选择一个batch进行变异
@@ -211,17 +216,28 @@ def main():
 
         mu_batch = mu_util.batch_mutate(batch)
 
+        new_x_test=[]
+        new_y_test=[]
+
+        for j in range(len(mu_batch)):
+            new_x_test.append(mu_batch[j][0])
+            new_y_test.append(mu_batch[j][1])
+
+        x_mutant.append(new_x_test)
+        y_mutant.append(new_y_test)
+
         # 计算神经元覆盖率
-        new_batch=np.array(mu_batch).reshape(-1,28,28,1)
-        csv_path, input_list=keras_test.load_neuron('./model/LeNet5.h5',new_batch)
-        coverage1 = coverage_functions.k_multisection_neuron_coverage(10, csv_path, input_list)
-        print("k_multisection coverage:", coverage1)
+        new_batch = np.array(new_x_test).reshape(-1,28,28,1)
+        # print(new_batch.shape)
+        all_layer_boundary, all_output_list, input_list=coverageMetrics.load_neuron('./model/LeNet5.h5',new_batch)
+        coverage0 = coverage_functions.neuron_coverage(all_output_list)
+        print("basic coverage:", coverage0)
 
         # 变异后的种子加入pool
         batch_pool.add_batch(mu_batch)
 
-    # 评估
-    Lenet5_evalutae(x_train,y_train,mu_batch,y_test)
+    # 评估 todo:变异后的图像需要和标签一一对应
+    Lenet5_evalutae(x_train,y_train,np.array(x_mutant),np.array(y_mutant))
 
 
 if __name__ == '__main__':

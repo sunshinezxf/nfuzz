@@ -92,27 +92,31 @@ def random_pick(state):
         s = random.randint(4, 6)
         return s
 
-def image_mutate(try_num, seed):
+def image_mutate(try_num, seed,label):
     """
     deepHunter alg2 图像变异
     :param try_num: 最大尝试次数
     :param seed: 初始种子(单个图)
+    :param label:该图片的标签
     :return: 变异成功的新种子或者原种子
     """
     state = 0
+    s = 0
     I = I0 = I01 = seed
     I1 = None
     t = -1
     for i in range(try_num):
+        # todo 更新state，改一下
         if state == 0:
-            t = random_pick(state)
+            t = random_pick(s)
+
         else:
-            t = random_pick(state)
+            t = random_pick(s)
 
         I1 = transform(t, I)
 
         if is_failed_test(I1):
-            # todo:加入失败集
+            # todo:加入失败集，标签改变，可以单独抽出去。
 
             pass
 
@@ -120,8 +124,11 @@ def image_mutate(try_num, seed):
             if t > 4:
                 state = 1
                 I01 = transform(t, I0)
-                return I1
-    return I
+                return I1,label
+    # print(I.shape,'------------------------')
+    # print(label)
+    # print(isinstance(I,numpy.ndarray))
+    return I,label
 
 def batch_mutate(batch):
     """
@@ -130,7 +137,9 @@ def batch_mutate(batch):
     :return:
     """
     ret=[]
-    for img in batch:
-        I=image_mutate(3,img)
-        ret.append(I)
+    for img_tuple in batch:
+        temp=image_mutate(3,img_tuple[0],img_tuple[1])
+        ret.append(temp)
+        # print(temp[0].shape, '------------------------')
+        # print(temp[1])
     return ret

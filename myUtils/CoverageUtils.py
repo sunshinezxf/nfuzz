@@ -35,8 +35,10 @@ def neuron_coverage(all_output_list,threshold=0.25):
     # all_output_list = uutils.get_all_output_file(path_list)
     for file in all_output_list:
         for layer in file:
+            # print('shape:', layer.shape)
             for i in range(len(layer)):
-                if layer[i]>=threshold:
+
+                if layer[i].any()>=threshold:# todo: 这里layer维度不统一 可以拉平
                     coveraged_sum+=1
                 coverage_sum+=1
 
