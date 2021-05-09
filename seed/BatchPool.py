@@ -6,6 +6,8 @@ import numpy as np
 from pathlib import Path
 from myUtils.converterUtils import path_2_ndarray_convert
 from seed.prioritizer.BaseBatchPrioritizer import BaseBatchPrioritizer
+import Seed
+import PriorityPool
 
 '''
 用来存放待fuzz的种子
@@ -35,7 +37,7 @@ class BatchPool:
 
     # Pool
     # element type is '{fuzzedTimes, batch}'
-    pool = []
+    pool = PriorityPool.PriorityPool()
 
     # constructor
     def __init__(self, seed_queue, batch_size=32, p_min=0.1, gamma=1, batch_prioritization=BaseBatchPrioritizer()):
@@ -49,7 +51,7 @@ class BatchPool:
     def pre_process(self):
         """
             Pull seeds from seed_queue and package into batch
-            把种子分批放入batch_buffer，存到pool
+            把种子封装以后分批放入batch_buffer，存到pool
         """
         while not self.seed_queue.empty():
             self.batch_buffer.append(self.seed_queue.pop())
@@ -59,45 +61,47 @@ class BatchPool:
                     # "batch": np.array(self.batch_buffer)
                     "batch": self.batch_buffer
                 }
-                self.pool.append(element)
+
+                # 把整个batch封装到seed中
+                seed=Seed.Seed(element,self.probability(element["fuzzed_times"]))
+                self.pool.push(seed)
                 self.batch_buffer = []
 
     def select_next(self):
         """
-            Random select an element from pool
-            从batch pool中随机选择一个batch。
-            这里不采样了，直接返回该batch的所有元素
-            变异后的batch如何加入原seed？
+            按照优先级从优先队列pool中选取一个batch
             :return
                 batch -- a batch of seeds
             :except
                 StopIteration -- The queue is empty
         """
-        if len(self.pool) < 1:
+        if self.pool.empty():
             raise StopIteration("The pool is empty.")
 
-        while True:
-            element = random.choice(self.pool)
-            probability = self.batch_prioritization.probability(element["fuzzed_times"], self.p_min, self.gamma)
+        return self.pool.pop()
 
-            if probability >= random.random():  # todo 意义何在？应该用优先队列
-                element["fuzzed_times"] = element["fuzzed_times"] + 1
-                self.gamma = max(element["fuzzed_times"], self.gamma)
-                return element["batch"]
+        # while True:
+        #     element = random.choice(self.pool)
+        #     probability = self.batch_prioritization.probability(element["fuzzed_times"], self.p_min, self.gamma)
+        #
+        #     if probability >= random.random():  #
+        #         element["fuzzed_times"] = element["fuzzed_times"] + 1
+        #         self.gamma = max(element["fuzzed_times"], self.gamma)
+        #         return element["batch"]
 
-    def get_pool(self):
-        """
-        返回pool中的所有种子
-        :return: 一维的种子列表
-        """
-
-        ret = []
-
-        for batch in self.pool:
-            for seed in batch:
-                ret.append(seed)
-
-        return ret
+    # def get_pool(self):
+    #     """
+    #     返回pool中的所有种子
+    #     :return: 一维的种子列表
+    #     """
+    #
+    #     ret = []
+    #
+    #     for batch in self.pool:
+    #         for seed in batch:
+    #             ret.append(seed)
+    #
+    #     return ret
 
     def save(self, path, start_with=0, save_size=-1):
         """
@@ -124,12 +128,13 @@ class BatchPool:
             raise IndexError("The start_with must be greater than or equal to 0. start_with=" + str(start_with))
 
         if save_size == -1:
-            end = len(self.pool)
+            end = self.pool.size()
         else:
-            end = min(len(self.pool), start_with + save_size)
+            end = min(self.pool.size(), start_with + save_size)
 
         for i in range(start_with, end):
-            batch = self.pool[i]["batch"]
+            # batch = self.pool[i]["batch"]
+            batch=self.pool.pop()["batch"]
             for img in batch:
                 uuid4 = str(uuid.uuid4()) + ".png"
                 suid = ''.join(uuid4.split('-'))
@@ -171,7 +176,8 @@ class BatchPool:
             # "batch": np.array(batch)
             "batch": batch
         }
-        self.pool.append(element)
+        # self.pool.append(element)
+        self.pool.push(Seed.Seed(element,self.probability()))
 
     def random_generate(self, number, generator):
         """
@@ -189,6 +195,10 @@ class BatchPool:
             seed_list.append(seed)
         return seed_list
 
-    @staticmethod
-    def test():
-        print("test")
+    def probability(self,fuzzed_time=0):
+        """
+        优先级选取规则
+        :param fuzzed_time: fuzz次数
+        :return:
+        """
+        return self.batch_prioritization.probability(fuzzed_time,self.p_min,self.gamma)
