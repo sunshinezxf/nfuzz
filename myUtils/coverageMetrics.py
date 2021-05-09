@@ -1,4 +1,4 @@
-from myUtils import CoverageUtils as coverage_functions
+from myUtils import coverageUtils as coverage_functions
 from myUtils import csvUtils as utils
 import numpy as np
 from scipy import special

@@ -1,6 +1,6 @@
 import cv2
 
-from myUtils.ConverterUtils import path_2_ndarray_convert
+from myUtils.converterUtils import path_2_ndarray_convert
 from seed.BaseSeedQueue import BaseSeedQueue
 
 seedQueue = BaseSeedQueue()

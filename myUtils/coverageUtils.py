@@ -4,6 +4,7 @@ from myUtils import csvUtils as uutils
 import copy
 from scipy import special
 
+
 # def neuron_coverage(path_list,threshold=0.25):
 #     coveraged_sum = 0
 #     coverage_sum = 0
@@ -20,14 +21,13 @@ from scipy import special
 #
 #     return coverage
 
-def neuron_coverage(all_output_list,threshold=0.25):
+def neuron_coverage(all_output_list, threshold=0.25):
     """
-    计算所有层的覆盖率
-    :param path_list:
+    计算所有层的神经元覆盖率
+    :param all_output_list:
     :param threshold:
     :return:
     """
-
 
     coveraged_sum = 0
     coverage_sum = 0
@@ -37,10 +37,16 @@ def neuron_coverage(all_output_list,threshold=0.25):
         for layer in file:
             # print('shape:', layer.shape)
             for i in range(len(layer)):
-
-                if layer[i].any()>=threshold:# todo: 这里layer维度不统一 可以拉平
-                    coveraged_sum+=1
-                coverage_sum+=1
+                # layer维度不统一 可以拉平
+                if len(layer[i] > 1):  # 二维
+                    for j in range(len(layer[i])):
+                        if layer[i][j] >= threshold:
+                            coveraged_sum += 1
+                        coverage_sum += 1
+                else:
+                    if layer[i] >= threshold:
+                        coveraged_sum += 1
+                    coverage_sum += 1
 
     coverage = coveraged_sum / coverage_sum
 
@@ -217,7 +223,6 @@ def top_k_neuron_coverage(k, all_input_list):
 
 # Top-k Neuron Patterns
 def top_neuron_patterns(k, all_input_list):
-
     neuron_sum_each_layer = []
     net_model = copy.deepcopy(all_input_list[0])
     for layer in range(len(net_model)):
@@ -242,6 +247,3 @@ def top_neuron_patterns(k, all_input_list):
     # coverage = len(coveraged_patterns) / patterns_sum
 
     return len(coveraged_patterns)
-
-
-

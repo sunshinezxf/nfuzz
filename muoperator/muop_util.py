@@ -22,6 +22,7 @@ ALPHA = 0.02
 BETA = 0.2
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
+
 def is_failed_test(I1):
     """
     判断是否是failed test
@@ -29,6 +30,7 @@ def is_failed_test(I1):
     :return:
     """
     return False
+
 
 def is_satisfied(seed, mutant):
     """
@@ -62,8 +64,15 @@ def is_satisfied(seed, mutant):
         else:
             return False
 
+
 # 进行变换
 def transform(state, seed):
+    """
+    所有的变异算子
+    :param state:
+    :param seed:
+    :return: 变异后的图片
+    """
     if state == 0:  # 缩放
         return ScaleMutator().mutate(seed)
     if state == 1:  # 平移
@@ -79,20 +88,26 @@ def transform(state, seed):
     if state == 6:  # 对比度/亮度
         return ContrastMutator().mutate(seed)
 
-def random_pick(state):
-    """
-    随机选择一种算子进行变异
-    :param state:
-    :return:
-    """
-    if state == 0:  # 可用选择一次仿射
-        s = random.randint(0, 6)
-        return s
-    else:
-        s = random.randint(4, 6)
-        return s
 
-def image_mutate(try_num, seed,label):
+def random_pick():
+    """
+    非仿射变换算子中随机选择一种算子进行变异
+    :return:算子序号
+    """
+    s = random.randint(4, 6)
+    return s
+
+
+def random_pick_all():
+    """
+    在所有算子中随机选择一种算子进行变异
+    :return:算子序号
+    """
+    s = random.randint(0, 6)
+    return s
+
+
+def image_mutate(try_num, seed, label):
     """
     deepHunter alg2 图像变异
     :param try_num: 最大尝试次数
@@ -106,12 +121,12 @@ def image_mutate(try_num, seed,label):
     I1 = None
     t = -1
     for i in range(try_num):
-        # todo 更新state，改一下
-        if state == 0:
-            t = random_pick(s)
-
+        if state == 0:  # 还没选过仿射
+            t = random_pick_all()
+            if t <= 3:  # 选了仿射变换
+                state = 1
         else:
-            t = random_pick(s)
+            t = random_pick()
 
         I1 = transform(t, I)
 
@@ -124,11 +139,9 @@ def image_mutate(try_num, seed,label):
             if t > 4:
                 state = 1
                 I01 = transform(t, I0)
-                return I1,label
-    # print(I.shape,'------------------------')
-    # print(label)
-    # print(isinstance(I,numpy.ndarray))
-    return I,label
+                return I1, label
+    return I, label
+
 
 def batch_mutate(batch):
     """
@@ -136,9 +149,9 @@ def batch_mutate(batch):
     :param batch:
     :return:
     """
-    ret=[]
+    ret = []
     for img_tuple in batch:
-        temp=image_mutate(3,img_tuple[0],img_tuple[1])
+        temp = image_mutate(3, img_tuple[0], img_tuple[1])
         ret.append(temp)
         # print(temp[0].shape, '------------------------')
         # print(temp[1])

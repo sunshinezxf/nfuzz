@@ -1,6 +1,6 @@
 import queue
 import numpy
-
+from heapq import *
 from seed.SeedQueue import SeedQueue
 
 
@@ -9,7 +9,7 @@ class BaseSeedQueue(SeedQueue):
         A base queue for seed operate
     """
 
-    # The queue to store seeds
+    # The queue to store seeds todo:使用优先队列
 
     def __init__(self):
         self.queue = queue.Queue()

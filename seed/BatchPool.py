@@ -4,7 +4,7 @@ import uuid
 import cv2
 import numpy as np
 from pathlib import Path
-from myUtils.ConverterUtils import path_2_ndarray_convert
+from myUtils.converterUtils import path_2_ndarray_convert
 from seed.prioritizer.BaseBatchPrioritizer import BaseBatchPrioritizer
 
 '''
@@ -80,7 +80,7 @@ class BatchPool:
             element = random.choice(self.pool)
             probability = self.batch_prioritization.probability(element["fuzzed_times"], self.p_min, self.gamma)
 
-            if probability >= random.random():# todo 意义何在
+            if probability >= random.random():  # todo 意义何在？应该用优先队列
                 element["fuzzed_times"] = element["fuzzed_times"] + 1
                 self.gamma = max(element["fuzzed_times"], self.gamma)
                 return element["batch"]

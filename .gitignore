@@ -1,7 +1,6 @@
 .idea/
 *.pyc
 *.jpg
-*.png
 *.h5
 *.gz
 *.idx3-ubyte

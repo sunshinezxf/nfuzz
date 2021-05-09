@@ -10,8 +10,8 @@ k-多节神经元覆盖 k-Multisection Neuron Coverage (KMNC)
 强神经元激活覆盖 Strong Neuron Activation Coverage (SNAC)
 Top-k神经元覆盖 Top-k Neuron Coverage (TKNC)
 
-![img_1.png](img_1.png)
-![img.png](img.png)
+![img_1.png](img/img_1.png)
+![img.png](img/img.png)
 
 ##deepHunter流程
 ###1.用初始种子构建batch，将batch添加到pool中
