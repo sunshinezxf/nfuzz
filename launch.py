@@ -151,8 +151,7 @@ def vgg_evaluate(x_train, y_train, x_test, y_test):
     model_vgg_mnist.save('../model/demo_model.h5')
 
 
-def Lenet5_evalutae(x_train, y_train, x_test, y_test,model):
-    # todo: 多余的过程
+def Lenet5_evalutae(x_train, y_train, x_test, y_test,l_model):
     x_train = x_train.reshape(-1, 28, 28, 1)
     x_train = x_train.astype("float32")
     y_train = y_train.astype("float32")
@@ -165,20 +164,8 @@ def Lenet5_evalutae(x_train, y_train, x_test, y_test,model):
     y_train_new = np_utils.to_categorical(num_classes=10, y=y_train)
     y_test_new = np_utils.to_categorical(num_classes=10, y=y_test)
 
-    # model = Sequential()
-    # model.add(Conv2D(filters=6, kernel_size=(5, 5), padding='valid', input_shape=(28, 28, 1), activation='tanh'))  # C1
-    # model.add(MaxPooling2D(pool_size=(2, 2)))  # S2
-    # model.add(Conv2D(filters=16, kernel_size=(5, 5), padding='valid', activation='tanh'))  # C3
-    # model.add(MaxPooling2D(pool_size=(2, 2)))  # S4
-    # model.add(Flatten())
-    # model.add(Dense(120, activation='tanh'))  # C5
-    # model.add(Dense(84, activation='tanh'))  # F6
-    # model.add(Dense(10, activation='softmax'))  # output
-    # model.summary()
-    #
-    # model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
-    history = model.fit(x_train, y_train_new, batch_size=64, epochs=2, verbose=1, validation_split=0.2, shuffle=True)
-    loss, accuracy = model.evaluate(x_test, y_test_new)
+    history = l_model.fit(x_train, y_train_new, batch_size=64, epochs=2, verbose=1, validation_split=0.2, shuffle=True)
+    loss, accuracy = l_model.evaluate(x_test, y_test_new)
     print(loss, accuracy)
     print(history.history)
 
