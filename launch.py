@@ -232,7 +232,7 @@ def main():
         # 变异后的种子加入pool
         batch_pool.add_batch(valid_mu_batch)
 
-    # 评估 todo:变异后的图像需要和标签一一对应
+    # 评估 todo:变异后的图像需要和标签一一对应 ; ValueError: cannot reshape array of size 10 into shape (28,28,1)
     Lenet5_evalutae(x_train, y_train, np.array(x_mutant), np.array(y_mutant), model)
 
 

@@ -71,6 +71,7 @@ class BatchPool:
         """
             按照优先级从优先队列pool中选取一个batch
             :return
+                seed.val() 即element
                 batch -- a batch of seeds
             :except
                 StopIteration -- The queue is empty
@@ -78,7 +79,8 @@ class BatchPool:
         if self.pool.empty():
             raise StopIteration("The pool is empty.")
 
-        return self.pool.pop()
+        # return self.pool.pop()
+        return self.pool.pop()["batch"]
 
         # while True:
         #     element = random.choice(self.pool)
