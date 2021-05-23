@@ -28,6 +28,7 @@ BETA = 0.2
 
 model = load_model('./model/LeNet5.h5')
 
+
 # (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
 def load_seed():
@@ -39,23 +40,26 @@ def load_seed():
     return x_train, y_train, x_test, y_test
 
 
-def preProcess(x_train,y_train):
+def preProcess(x_train, y_train):
     """
     对种子进行预处理预处理
     :return:
     """
-    seeds=[]
+    seeds = []
     for i in range(len(x_train)):
-        seed=(x_train[0],y_train[0])
+        seed = (x_train[0], y_train[0])
         seeds.append(seed)
     return seeds
 
 
-def evaluate(x_train, y_train, x_test, y_test, y_train_new, y_test_new):
+def evaluate(x_train, y_train, x_test, y_test, y_train_new, y_test_new, my_model):
     """
     评估变异结果
-    :param x_train:
-    :param y_train:
+    todo: 传入参数的具体用处
+    todo: 对模型的普适性
+    :param my_model: 使用的模型
+    :param x_train: 原始训练集
+    :param y_train: 原始标签
     :param x_test:
     :param y_test:
     :param y_train_new:
@@ -63,18 +67,17 @@ def evaluate(x_train, y_train, x_test, y_test, y_train_new, y_test_new):
     :return:
     """
 
-
     # x_train, y_train, x_test, y_test, y_train_new, y_test_new = LeNet5.load_mnist()
-    for layer in model.layers:
+    for layer in my_model.layers:
         for weight in layer.weights:
             print(weight.name, weight)
 
     layer_name = 'conv2d_1'
-    intermediate_layer_model = Model(inputs=model.input,
-                                     outputs=model.get_layer(layer_name).output)
+    intermediate_layer_model = Model(inputs=my_model.input,
+                                     outputs=my_model.get_layer(layer_name).output)
     intermediate_output = intermediate_layer_model.predict(x_test[0])
     print(intermediate_output)
-    loss, accuracy = model.evaluate(x_test, y_test_new)
+    loss, accuracy = my_model.evaluate(x_test, y_test_new)
     print(loss, accuracy)
 
 
@@ -151,7 +154,7 @@ def vgg_evaluate(x_train, y_train, x_test, y_test):
     model_vgg_mnist.save('../model/demo_model.h5')
 
 
-def Lenet5_evalutae(x_train, y_train, x_test, y_test,l_model):
+def Lenet5_evalutae(x_train, y_train, x_test, y_test, l_model):
     x_train = x_train.reshape(-1, 28, 28, 1)
     x_train = x_train.astype("float32")
     y_train = y_train.astype("float32")
@@ -183,7 +186,7 @@ def main():
     x_train, y_train, x_test, y_test = load_seed()
 
     # 预处理
-    seeds = preProcess(x_train,y_train)
+    seeds = preProcess(x_train, y_train)
 
     # 放入队列
     seed_queue = sq.BaseSeedQueue(seeds)
@@ -193,39 +196,44 @@ def main():
 
     # 存放待fuzz的种子
     batch_pool = bp.BatchPool(seed_queue=seed_queue, batch_size=32, p_min=0.1, gamma=1,
-                           batch_prioritization=batch_prioritizer)
+                              batch_prioritization=batch_prioritizer)
 
-    x_mutant=[]
-    y_mutant=[]
+    x_mutant = []
+    y_mutant = []
+
+    # 收集无效的变异种子
+    failed_test=[]
 
     for i in range(10):
         # 随机选择一个batch进行变异
         batch = batch_pool.select_next()
+        valid_mu_batch,failed_mu_batch = mu_util.batch_mutate(batch)
 
-        mu_batch = mu_util.batch_mutate(batch)
+        # 收集无效的变异种子
+        failed_test.append(failed_mu_batch)
 
-        new_x_test=[]
-        new_y_test=[]
+        new_x_test = []
+        new_y_test = []
 
-        for j in range(len(mu_batch)):
-            new_x_test.append(mu_batch[j][0])
-            new_y_test.append(mu_batch[j][1])
+        for j in range(len(valid_mu_batch)):
+            new_x_test.append(valid_mu_batch[j][0])
+            new_y_test.append(valid_mu_batch[j][1])
 
         x_mutant.append(new_x_test)
         y_mutant.append(new_y_test)
 
         # 计算神经元覆盖率
-        new_batch = np.array(new_x_test).reshape(-1,28,28,1)
+        new_batch = np.array(new_x_test).reshape(-1, 28, 28, 1)
         # print(new_batch.shape)
-        all_layer_boundary, all_output_list, input_list=coverageMetrics.load_neuron('./model/LeNet5.h5',new_batch)
+        all_layer_boundary, all_output_list, input_list = coverageMetrics.load_neuron('./model/LeNet5.h5', new_batch)
         coverage0 = coverage_functions.neuron_coverage(all_output_list)
         print("basic coverage:", coverage0)
 
         # 变异后的种子加入pool
-        batch_pool.add_batch(mu_batch)
+        batch_pool.add_batch(valid_mu_batch)
 
     # 评估 todo:变异后的图像需要和标签一一对应
-    Lenet5_evalutae(x_train,y_train,np.array(x_mutant),np.array(y_mutant),model)
+    Lenet5_evalutae(x_train, y_train, np.array(x_mutant), np.array(y_mutant), model)
 
 
 if __name__ == '__main__':

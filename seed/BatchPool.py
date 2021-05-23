@@ -6,8 +6,8 @@ import numpy as np
 from pathlib import Path
 from myUtils.converterUtils import path_2_ndarray_convert
 from seed.prioritizer.BaseBatchPrioritizer import BaseBatchPrioritizer
-import Seed
-import PriorityPool
+from seed import Seed
+from seed import PriorityPool
 
 '''
 用来存放待fuzz的种子

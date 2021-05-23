@@ -8,7 +8,7 @@ class BaseSeedQueue(SeedQueue):
         A base queue for seed operate
     """
 
-    # The queue to store seeds todo:使用优先队列
+    # The queue to store seeds
 
     def __init__(self):
         self.queue = queue.Queue()

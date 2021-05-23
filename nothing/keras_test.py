@@ -45,7 +45,7 @@ print('load mnist data----------')
 # print(x_train.shape)
 # print(x_test.shape)
 
-# 重新定义数据格式，归一化 todo:归一化以后shape由28*28变784一维的了
+# 重新定义数据格式，归一化 归一化以后shape由28*28变784一维的了
 # x_train = x_train.reshape(x_train.shape[0], -1) / 255.0
 # x_test = x_test.reshape(x_test.shape[0], -1) / 255.0
 #
@@ -130,7 +130,7 @@ def load_neuron(path, x_input):
     csv_path = []  # 存放神经元上下界信息的路径列表（多个csv文件)
     input_list = []  # 待计算覆盖率的神经元信息列表（测试数据形成的神经元信息）
 
-    # 取某一层的输出为输出新建为model，采用函数模型. todo:每个层都需要计算覆盖率吗
+    # 取某一层的输出为输出新建为model，采用函数模型. 每个层都需要计算覆盖率吗
     for item in layers:
         layer_name = item['config']['name']
         layer_model = Model(inputs=model.input, outputs=model.get_layer(layer_name).output)
@@ -147,7 +147,7 @@ def load_neuron(path, x_input):
         # 得到各层各个神经元最大值和最小值
         layer_boundary = utils.get_boundary(reverse_layer_output)
 
-        # 将最大值最小值保存为csv文件 todo:具体存放路径待定
+        # 将最大值最小值保存为csv文件 具体存放路径待定
         layer_boundary_list = utils.save_boundary_list(layer_boundary,'./csv/'+ layer_name + '_boundary.csv')
         csv_path.append(layer_name + '_boundary.csv')
 

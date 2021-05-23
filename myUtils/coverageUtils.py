@@ -1,4 +1,5 @@
 #  覆盖计算方法
+import numpy
 
 from myUtils import csvUtils as uutils
 import copy
@@ -38,12 +39,25 @@ def neuron_coverage(all_output_list, threshold=0.25):
             # print('shape:', layer.shape)
             for i in range(len(layer)):
                 # layer维度不统一 可以拉平
-                if len(layer[i] > 1):  # 二维
+                if isinstance(layer[i],numpy.ndarray):
+                    # 至少是二维的
+                    # print("----------------二维")
+                    # print(layer[i],type(layer[i]))
                     for j in range(len(layer[i])):
-                        if layer[i][j] >= threshold:
-                            coveraged_sum += 1
-                        coverage_sum += 1
+                        if isinstance(layer[i][j],numpy.ndarray):
+                            for k in range(len(layer[i][j])):
+                                if layer[i][j][k] >= threshold:
+                                    coveraged_sum += 1
+                                coverage_sum += 1
+                        else:
+                            if layer[i][j] >= threshold:
+                                coveraged_sum += 1
+                            coverage_sum += 1
+
                 else:
+                    # 一维的
+                    # print("--------------------------------------------一维")
+                    # print(layer[i],type(layer[i]))
                     if layer[i] >= threshold:
                         coveraged_sum += 1
                     coverage_sum += 1
@@ -53,7 +67,7 @@ def neuron_coverage(all_output_list, threshold=0.25):
     return coverage
 
 
-# todo:只要最简单的就行了
+# 目前只要最简单的就行了
 # k-multisection Neuron Coverage
 def k_multisection_neuron_coverage(k, path_list, all_input_list):
     """
