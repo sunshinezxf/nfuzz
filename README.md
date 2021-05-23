@@ -13,13 +13,13 @@ Top-k神经元覆盖 Top-k Neuron Coverage (TKNC)
 ![img_1.png](img/img_1.png)
 ![img.png](img/img.png)
 
-##deepHunter流程
-###1.用初始种子构建batch，将batch添加到pool中
-###2.fuzzer从pool中按某种优先级取出一个batch，从这个batch中对一些种子进行采样，对被采样的种子进行变异
-###3.对于原始种子的每一个有效的突变体，test oracle将验证这是否是一个failed test。对本batch所有样本种子进行突变后，构建存活的mutant batch。收集该batch的覆盖信息
+## deepHunter流程
+### 1.用初始种子构建batch，将batch添加到pool中
+### 2.fuzzer从pool中按某种优先级取出一个batch，从这个batch中对一些种子进行采样，对被采样的种子进行变异
+### 3.对于原始种子的每一个有效的突变体，test oracle将验证这是否是一个failed test。对本batch所有样本种子进行突变后，构建存活的mutant batch。收集该batch的覆盖信息
 
 
 
-##问题：
-###1.什么是failed test？变异前后预测结果和标签是否不一致么
-###2.如何进行评估？用变异后的种子当测试集进行如上指标的评估吗
+## 问题：
+### 1.什么是failed test？变异前后预测结果和标签是否不一致么
+### 2.如何进行评估？用变异后的种子当测试集进行如上指标的评估吗
