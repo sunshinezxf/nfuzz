@@ -23,15 +23,6 @@ BETA = 0.2
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
 
-def is_failed_test(I1):
-    """
-    判断是否是failed test
-    :param I1:
-    :return:
-    """
-    return False
-
-
 def is_satisfied(seed, mutant):
     """
     判断mutant是否有意义
@@ -107,7 +98,7 @@ def random_pick_all():
     return s
 
 
-def image_mutate(try_num, seed, label):
+def image_mutate(seed, label, try_num=3):
     """
     deepHunter alg2 图像变异
     :param try_num: 最大尝试次数
@@ -130,27 +121,33 @@ def image_mutate(try_num, seed, label):
 
         I1 = transform(t, I)
 
-        if is_failed_test(I1):
-            # todo:加入失败集，标签改变，可以单独抽出去。
-
         if is_satisfied(I01, I1):
             if t > 4:
                 state = 1
                 I01 = transform(t, I0)
-                return I1, label
-    return I, label
+
+                # 返回变异成功的种子
+                return False, I1, label
+
+    # 返回原种子
+    return True, I, label
 
 
 def batch_mutate(batch):
     """
-    返回变异完的一批种子
+    返回变异完的一批种子,failedTest的判断逻辑由外部实现
     :param batch:
     :return:
     """
-    ret = []
+    valid_test = []
+    failed_test = []
+    result_set = []
+
     for img_tuple in batch:
-        temp = image_mutate(3, img_tuple[0], img_tuple[1])
-        ret.append(temp)
-        # print(temp[0].shape, '------------------------')
-        # print(temp[1])
-    return ret
+        flag, img, label = image_mutate(img_tuple[0], img_tuple[1])
+        if flag:
+            # 是原种子，无需验证
+            valid_test.append((img, label))
+        else:
+            result_set.append((img,label))
+    return result_set

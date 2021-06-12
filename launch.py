@@ -26,10 +26,22 @@ from myUtils import coverageUtils as coverage_functions
 ALPHA = 0.0
 BETA = 0.2
 
-model = load_model('./model/LeNet5.h5')
+global_model = load_model('./model/LeNet5.h5')
 
 
 # (x_train, y_train), (x_test, y_test) = mnist.load_data()
+
+def print_model_config(model):
+    """
+    打印模型信息
+    :param model:
+    :return:
+    """
+    for layer in model.layers:
+        print(layer.name,':input_shape=',layer.input_shape)
+        # print('weights:-------------------------------')
+        # for weight in layer.weights:
+        #     print(weight.name, weight)
 
 def load_seed():
     """
@@ -40,7 +52,7 @@ def load_seed():
     return x_train, y_train, x_test, y_test
 
 
-def preProcess(x_train, y_train):
+def pre_process(x_train, y_train):
     """
     对种子进行预处理预处理
     :return:
@@ -50,36 +62,6 @@ def preProcess(x_train, y_train):
         seed = (x_train[0], y_train[0])
         seeds.append(seed)
     return seeds
-
-
-def evaluate(x_train, y_train, x_test, y_test, y_train_new, y_test_new, my_model):
-    """
-    评估变异结果
-    todo: 传入参数的具体用处
-    todo: 对模型的普适性
-    :param my_model: 使用的模型
-    :param x_train: 原始训练集
-    :param y_train: 原始标签
-    :param x_test:
-    :param y_test:
-    :param y_train_new:
-    :param y_test_new:
-    :return:
-    """
-
-    # x_train, y_train, x_test, y_test, y_train_new, y_test_new = LeNet5.load_mnist()
-    for layer in my_model.layers:
-        for weight in layer.weights:
-            print(weight.name, weight)
-
-    layer_name = 'conv2d_1'
-    intermediate_layer_model = Model(inputs=my_model.input,
-                                     outputs=my_model.get_layer(layer_name).output)
-    intermediate_output = intermediate_layer_model.predict(x_test[0])
-    print(intermediate_output)
-    loss, accuracy = my_model.evaluate(x_test, y_test_new)
-    print(loss, accuracy)
-
 
 def vgg_evaluate(x_train, y_train, x_test, y_test):
     """
@@ -154,7 +136,7 @@ def vgg_evaluate(x_train, y_train, x_test, y_test):
     model_vgg_mnist.save('../model/demo_model.h5')
 
 
-def Lenet5_evalutae(x_train, y_train, x_test, y_test, l_model):
+def Lenet5_evaluate(x_train, y_train, x_test, y_test, model):
     x_train = x_train.reshape(-1, 28, 28, 1)
     x_train = x_train.astype("float32")
     y_train = y_train.astype("float32")
@@ -167,13 +149,61 @@ def Lenet5_evalutae(x_train, y_train, x_test, y_test, l_model):
     y_train_new = np_utils.to_categorical(num_classes=10, y=y_train)
     y_test_new = np_utils.to_categorical(num_classes=10, y=y_test)
 
-    history = l_model.fit(x_train, y_train_new, batch_size=64, epochs=2, verbose=1, validation_split=0.2, shuffle=True)
-    loss, accuracy = l_model.evaluate(x_test, y_test_new)
+    history = model.fit(x_train, y_train_new, batch_size=64, epochs=2, verbose=1, validation_split=0.2, shuffle=True)
+    loss, accuracy = model.evaluate(x_test, y_test_new)
     print(loss, accuracy)
     print(history.history)
 
     # -> https://github.com/keras-team/keras/issues/2378
     # model.save("model/LeNet5.h5", overwrite=True)
+
+def model_evaluate(x_test,y_test, model):
+    """
+    通用的模型评估。暂时基于LeNet5
+    :param x_test:
+    :param y_test:
+    :param model:
+    :return:
+    """
+    print_model_config(model)
+
+    # 获取第一层输入的shape
+    first_layer = model.get_layer(index=0)
+    input_shape = first_layer.input_shape
+    # 一般来说输入的shape是三维的
+    if len(input_shape) == 4:
+        x_test=x_test.reshape(-1,x_test.shape[0],x_test.shape[1],x_test.shape[2])
+
+    x_test /= 255
+    # 归一化
+    y_test_new = np_utils.to_categorical(num_classes=10, y=y_test)
+    loss, accuracy = model.evaluate(x_test, y_test_new)
+    print('model evaluate:-------------------------------')
+    print(loss, accuracy)
+
+
+def select_failed_test(mutate_seeds, model):
+    """
+    筛选failedTest
+    :param mutate_seeds: 变异后的种子集
+    :param model: 待测的keras模型
+    :return:
+    """
+    valid_mu_batch=[]
+    failed_mu_batch=[]
+
+    for seed in mutate_seeds:
+        test_img=seed[0]
+        test_label=seed[1]
+        # 预测标签
+        predict_label=model.predict_classes(test_img)[0]
+
+        if test_label==predict_label:
+            valid_mu_batch.append(seed)
+        else:
+            failed_mu_batch.append(seed)
+
+    return valid_mu_batch,failed_mu_batch
 
 
 def main():
@@ -186,7 +216,7 @@ def main():
     x_train, y_train, x_test, y_test = load_seed()
 
     # 预处理
-    seeds = preProcess(x_train, y_train)
+    seeds = pre_process(x_train, y_train)
 
     # 放入队列
     seed_queue = sq.BaseSeedQueue(seeds)
@@ -207,7 +237,10 @@ def main():
     for i in range(10):
         # 随机选择一个batch进行变异
         batch = batch_pool.select_next()
-        valid_mu_batch,failed_mu_batch = mu_util.batch_mutate(batch)
+
+        # 筛选failedTest
+        mu_batch=mu_util.batch_mutate(batch)
+        valid_mu_batch,failed_mu_batch = select_failed_test(mu_batch)
 
         # 收集无效的变异种子
         failed_test.append(failed_mu_batch)
@@ -232,8 +265,8 @@ def main():
         # 变异后的种子加入pool
         batch_pool.add_batch(valid_mu_batch)
 
-    # 评估 todo:变异后的图像需要和标签一一对应 ; ValueError: cannot reshape array of size 10 into shape (28,28,1)
-    Lenet5_evalutae(x_train, y_train, np.array(x_mutant), np.array(y_mutant), model)
+    # 评估
+    model_evaluate(x_train, y_train, np.array(x_mutant), np.array(y_mutant), global_model)
 
 
 if __name__ == '__main__':
