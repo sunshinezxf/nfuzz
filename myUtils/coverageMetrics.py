@@ -45,7 +45,7 @@ print('load mnist data----------')
 # print(x_train.shape)
 # print(x_test.shape)
 
-# 重新定义数据格式，归一化 todo:归一化以后shape由28*28变784一维的了
+# 重新定义数据格式，归一化 归一化以后shape由28*28变784一维的了
 # x_train = x_train.reshape(x_train.shape[0], -1) / 255.0
 # x_test = x_test.reshape(x_test.shape[0], -1) / 255.0
 #
