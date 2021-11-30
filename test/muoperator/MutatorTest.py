@@ -1,6 +1,6 @@
 import cv2
-from muoperator.TransposeMutator import TransposeMutator
-from myUtils.converterUtils import path_2_ndarray_convert
+from muoperator.transpose_mutator import TransposeMutator
+from myUtils.converter_utils import path_2_ndarray_convert
 from seed import BatchPool
 from seed.generator import ImageRandomGenerator as ImageGenerator
 from seed import BaseSeedQueue as seedQueue

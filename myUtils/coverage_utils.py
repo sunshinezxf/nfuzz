@@ -1,7 +1,7 @@
 #  覆盖计算方法
 import numpy
 
-from myUtils import csvUtils as uutils
+from myUtils import csv_utils as uutils
 import copy
 from scipy import special
 
@@ -61,6 +61,8 @@ def neuron_coverage(all_output_list, threshold=0.25):
                     if layer[i] >= threshold:
                         coveraged_sum += 1
                     coverage_sum += 1
+    if coverage_sum==0:
+        return 0
 
     coverage = coveraged_sum / coverage_sum
 

@@ -1,16 +1,10 @@
-from myUtils import coverageUtils as coverage_functions
-from myUtils import csvUtils as utils
+from myUtils import muop_util as mu
+from myUtils import csv_utils as utils
 import numpy as np
-from scipy import special
-import copy
-import tensorflow as tf
-from muoperator import muop_util as mu
 
 from keras.datasets import mnist
-from keras.utils import np_utils
 from keras.models import load_model
 from keras.models import Model
-import time
 
 
 # 对MNIST数据做简单修改，添加噪音

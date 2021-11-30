@@ -1,12 +1,5 @@
-import seed.BaseSeedQueue as BaseSeedQueue
-import seed.BatchPool as BatchPool
-import myUtils
-import muoperator.muop_util as mu
+import myUtils.muop_util as mu
 from keras.datasets import mnist
-from keras.utils import np_utils
-from keras.models import load_model
-from keras.models import Model
-import time
 import numpy as np
 
 # 初始种子

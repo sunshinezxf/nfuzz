@@ -1,4 +1,3 @@
-import numpy as np
 from muoperator.Mutator import Mutator
 import cv2
 import random

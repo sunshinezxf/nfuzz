@@ -4,7 +4,7 @@ import uuid
 import cv2
 import numpy as np
 from pathlib import Path
-from myUtils.converterUtils import path_2_ndarray_convert
+from myUtils.converter_utils import path_2_ndarray_convert
 from seed.prioritizer.BaseBatchPrioritizer import BaseBatchPrioritizer
 from seed import Seed
 from seed import PriorityPool

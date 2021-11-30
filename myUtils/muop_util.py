@@ -1,15 +1,13 @@
 # this file is responsible for assign mutation operators
-import cv2
-import numpy
+
 import random
-from muoperator.Mutator import Mutator
-from muoperator.ScaleMutator import ScaleMutator
-from muoperator.TranslationMutator import TranslationMutator
-from muoperator.ShearMutator import ShearMutator
-from muoperator.TransposeMutator import TransposeMutator
-from muoperator.NoiseMutator import NoiseMutator
-from muoperator.BlurMutator import BlurMutator
-from muoperator.ContrastMutator import ContrastMutator
+from muoperator.scale_mutator import ScaleMutator
+from muoperator.translation_mutator import TranslationMutator
+from muoperator.shear_mutator import ShearMutator
+from muoperator.transpose_mutator import TransposeMutator
+from muoperator.noise_mutator import NoiseMutator
+from muoperator.blur_mutator import BlurMutator
+from muoperator.contrast_mutator import ContrastMutator
 from keras.datasets import mnist
 
 """

@@ -1,8 +1,6 @@
 import abc
-import cv2
-import numpy as np
-import random
-from muoperator import muop_util
+from myUtils import muop_util
+
 
 class Mutator(metaclass=abc.ABCMeta):
     """
