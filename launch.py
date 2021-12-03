@@ -1,32 +1,9 @@
-from seed.prioritizer import BaseBatchPrioritizer as bbp
-import myUtils.muop_util as mu_util
 from keras.datasets import mnist
-from seed import BatchPool as bp
-from seed import BaseSeedQueue as sq
 from keras.models import load_model
-from myUtils import model_utils
-from engine import deep_hunter,entropic
-
-# alpha>0,beta<1,论文中只字未提如何选取具体的值，应该是看效果吧
-ALPHA = 0.0
-BETA = 0.2
-
-global_model = load_model('./model/LeNet5.h5')
-
-
-# (x_train, y_train), (x_test, y_test) = mnist.load_data()
-
-def print_model_config(model):
-    """
-    打印模型信息
-    :param model:
-    :return:
-    """
-    for layer in model.layers:
-        print(layer.name, ':input_shape=', layer.input_shape)
-        # print('weights:-------------------------------')
-        # for weight in layer.weights:
-        #     print(weight.name, weight)
+from engine import deep_hunter, entropic
+from seed import BaseSeedQueue as sq
+from seed import BatchPool as bp
+from seed.prioritizer import BaseBatchPrioritizer as bbp
 
 
 def load_seed():
@@ -57,6 +34,9 @@ def main():
     :return:
     """
 
+    # 加载模型
+    model = load_model('./model/LeNet5.h5')
+
     # 加载种子
     x_train, y_train, x_test, y_test = load_seed()
 
@@ -73,8 +53,8 @@ def main():
     batch_pool = bp.BatchPool(seed_queue=seed_queue, batch_size=32, p_min=0.1, gamma=1,
                               batch_prioritization=batch_prioritizer)
 
-    deep_hunter.process(batch_pool, global_model)
-    entropic.process(seeds,global_model)
+    deep_hunter.process(batch_pool, model)
+    entropic.process(seeds,model)
 
 
 if __name__ == '__main__':

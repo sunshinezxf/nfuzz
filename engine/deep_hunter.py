@@ -1,6 +1,7 @@
-import myUtils.muop_util as mu_util
-from myUtils import model_utils,coverage_metrics,coverage_utils
 import numpy as np
+import myUtils.muop_util as mu_util
+from myUtils import model_utils, coverage_metrics, coverage_utils
+
 
 def process(batch_pool, model, max_loop=10):
     """

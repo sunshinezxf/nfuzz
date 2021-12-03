@@ -1,26 +1,8 @@
-#  覆盖计算方法
-import numpy
-
-from myUtils import csv_utils as uutils
 import copy
+import numpy
 from scipy import special
+from myUtils import csv_utils
 
-
-# def neuron_coverage(path_list,threshold=0.25):
-#     coveraged_sum = 0
-#     coverage_sum = 0
-#
-#     all_output_list = uutils.get_all_output_file(path_list)
-#     for file in all_output_list:
-#         for layer in file:
-#             for i in range(len(layer)):
-#                 if layer[i]>=threshold:
-#                     coveraged_sum+=1
-#                 coverage_sum+=1
-#
-#     coverage = coveraged_sum / coverage_sum
-#
-#     return coverage
 
 def neuron_coverage(all_output_list, threshold=0.25):
     """
@@ -33,18 +15,17 @@ def neuron_coverage(all_output_list, threshold=0.25):
     coveraged_sum = 0
     coverage_sum = 0
 
-    # all_output_list = uutils.get_all_output_file(path_list)
     for file in all_output_list:
         for layer in file:
             # print('shape:', layer.shape)
             for i in range(len(layer)):
                 # layer维度不统一 可以拉平
-                if isinstance(layer[i],numpy.ndarray):
+                if isinstance(layer[i], numpy.ndarray):
                     # 至少是二维的
                     # print("----------------二维")
                     # print(layer[i],type(layer[i]))
                     for j in range(len(layer[i])):
-                        if isinstance(layer[i][j],numpy.ndarray):
+                        if isinstance(layer[i][j], numpy.ndarray):
                             for k in range(len(layer[i][j])):
                                 if layer[i][j][k] >= threshold:
                                     coveraged_sum += 1
@@ -61,7 +42,7 @@ def neuron_coverage(all_output_list, threshold=0.25):
                     if layer[i] >= threshold:
                         coveraged_sum += 1
                     coverage_sum += 1
-    if coverage_sum==0:
+    if coverage_sum == 0:
         return 0
 
     coverage = coveraged_sum / coverage_sum
@@ -69,23 +50,21 @@ def neuron_coverage(all_output_list, threshold=0.25):
     return coverage
 
 
-# 目前只要最简单的就行了
-# k-multisection Neuron Coverage
-def k_multisection_neuron_coverage(k, path_list, all_input_list):
+def k_multi_section_neuron_coverage(k, path_list, all_input_list):
     """
-    计算k-multisection覆盖率
+    计算k-multiSection覆盖率
     :param k: 将神经元输出上、下界平均分为k组
     :param path_list: 存放神经元上下界信息的路径列表（多个csv文件)
     :param all_input_list: 待计算覆盖率的神经元信息列表（测试数据形成的神经元信息）
     :return: 计算得到的覆盖率
     """
     # all_boundary_list = path_list
-    all_boundary_list = uutils.get_all_boundary_file(path_list)
+    all_boundary_list = csv_utils.get_all_boundary_file(path_list)
 
-    output_list = uutils.covert_to_k_multisection(k, all_boundary_list)  # 将每个神经元信息转化成k个小的上下界信息
-    all_label_list = uutils.get_label_list(output_list)  # 标签列表，用于计算覆盖率
+    output_list = csv_utils.covert_to_k_multisection(k, all_boundary_list)  # 将每个神经元信息转化成k个小的上下界信息
+    all_label_list = csv_utils.get_label_list(output_list)  # 标签列表，用于计算覆盖率
 
-    k_multisection_sum = uutils.k_multisection_sum(output_list)  # 总神经元个数N * k
+    k_multi_section_sum = csv_utils.k_multisection_sum(output_list)  # 总神经元个数N * k
     coveraged_sum = 0  # 被覆盖的个数
     for data_size in range(len(all_input_list)):
         input_list = all_input_list[data_size]
@@ -100,8 +79,8 @@ def k_multisection_neuron_coverage(k, path_list, all_input_list):
                 # else:
                 # print("未覆盖")
                 # print(all_label_list[layer][size])
-                if uutils.is_neuron_coveraged(neuron_info_list, boundary_info_list)[0]:
-                    index = uutils.is_neuron_coveraged(neuron_info_list, boundary_info_list)[1]
+                if csv_utils.is_neuron_coveraged(neuron_info_list, boundary_info_list)[0]:
+                    index = csv_utils.is_neuron_coveraged(neuron_info_list, boundary_info_list)[1]
                     all_label_list[layer][size][index][0] = 1
 
     for layer in range(len(all_label_list)):
@@ -113,12 +92,11 @@ def k_multisection_neuron_coverage(k, path_list, all_input_list):
                 if neuron_label_list[k][0] == 1:
                     coveraged_sum += 1
 
-    coverage = coveraged_sum / k_multisection_sum  # 计算覆盖率
+    coverage = coveraged_sum / k_multi_section_sum  # 计算覆盖率
 
     return coverage
 
 
-# Neuron Boundary Coverage
 def neuron_boundary_coverage(path_list, all_input_list):
     """
     计算Neuron Boundary覆盖率
@@ -129,8 +107,8 @@ def neuron_boundary_coverage(path_list, all_input_list):
     coveraged_sum = 0
     coverage_sum = 0
 
-    all_boundary_list = uutils.get_all_boundary_file(path_list)
-    neuron_boundary_label_list = uutils.get_boundary_coverage_label_list(all_boundary_list)
+    all_boundary_list = csv_utils.get_all_boundary_file(path_list)
+    neuron_boundary_label_list = csv_utils.get_boundary_coverage_label_list(all_boundary_list)
 
     for data_size in range(len(all_input_list)):
         input_list = all_input_list[data_size]
@@ -139,7 +117,7 @@ def neuron_boundary_coverage(path_list, all_input_list):
             for size in range(len(layer_input_list)):
                 neuron_input_list = layer_input_list[size]
                 boundary_list = all_boundary_list[layer][size]
-                result, flag = uutils.is_upper_or_lower(neuron_input_list, boundary_list)
+                result, flag = csv_utils.is_upper_or_lower(neuron_input_list, boundary_list)
                 if result is True and flag == 0:
                     neuron_boundary_label_list[layer][size][0][0] = 1
                 if result is True and flag == 1:
@@ -162,7 +140,6 @@ def neuron_boundary_coverage(path_list, all_input_list):
     return coverage
 
 
-# Strong Neuron Activation Coverage
 def strong_neuron_activation_coverage(path_list, all_input_list):
     """
     计算Strong Neuron Action覆盖率
@@ -173,8 +150,8 @@ def strong_neuron_activation_coverage(path_list, all_input_list):
     coveraged_sum = 0
     coverage_sum = 0
 
-    all_boundary_list = uutils.get_all_boundary_file(path_list)
-    neuron_boundary_label_list = uutils.get_boundary_coverage_label_list(all_boundary_list)
+    all_boundary_list = csv_utils.get_all_boundary_file(path_list)
+    neuron_boundary_label_list = csv_utils.get_boundary_coverage_label_list(all_boundary_list)
 
     for data_size in range(len(all_input_list)):
         input_list = all_input_list[data_size]
@@ -183,7 +160,7 @@ def strong_neuron_activation_coverage(path_list, all_input_list):
             for size in range(len(layer_input_list)):
                 neuron_input_list = layer_input_list[size]
                 boundary_list = all_boundary_list[layer][size]
-                result, flag = uutils.is_upper_or_lower(neuron_input_list, boundary_list)
+                result, flag = csv_utils.is_upper_or_lower(neuron_input_list, boundary_list)
                 if result is True and flag == 1:
                     neuron_boundary_label_list[layer][size][1][0] = 1
 
@@ -204,7 +181,6 @@ def strong_neuron_activation_coverage(path_list, all_input_list):
     return coverage
 
 
-# Top-k Neuron Coverage
 def top_k_neuron_coverage(k, all_input_list):
     """
     计算Top-k Neuron 覆盖率
@@ -215,13 +191,13 @@ def top_k_neuron_coverage(k, all_input_list):
     coveraged_sum = 0
     coverage_sum = 0
 
-    top_k_neuron_label_list = uutils.get_top_k_neuron_label_list(all_input_list)
+    top_k_neuron_label_list = csv_utils.get_top_k_neuron_label_list(all_input_list)
 
     for data_size in range(len(all_input_list)):
         input_list = all_input_list[data_size]
         for layer in range(len(input_list)):
             layer_list = input_list[layer]
-            top_k_index_list = uutils.get_top_k_index_list(k, layer_list)
+            top_k_index_list = csv_utils.get_top_k_index_list(k, layer_list)
             layer_top_k_neuron_label_list = top_k_neuron_label_list[layer]
             for ite in range(len(top_k_index_list)):
                 layer_top_k_neuron_label_list[top_k_index_list[ite]][0] = 1
@@ -255,7 +231,7 @@ def top_neuron_patterns(k, all_input_list):
         neuron_patterns = []
         for layer in range(len(input_list)):
             layer_list = input_list[layer]
-            top_k_index_list = uutils.get_top_k_index_list(k, layer_list)
+            top_k_index_list = csv_utils.get_top_k_index_list(k, layer_list)
             neuron_patterns.append(top_k_index_list)
         if neuron_patterns not in coveraged_patterns:
             coveraged_patterns.append(neuron_patterns)
