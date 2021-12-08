@@ -50,7 +50,6 @@ class BatchPool:
 
     def pre_process(self):
         """
-            Pull seeds from seed_queue and package into batch
             把种子封装以后分批放入batch_buffer，存到pool
         """
         while not self.seed_queue.empty():

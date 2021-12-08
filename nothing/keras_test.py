@@ -136,7 +136,7 @@ def load_neuron(path, x_input):
         print(len(layer_output), len(layer_output[0]))  # 二维数组
 
         # 翻转矩阵
-        reverse_layer_output = utils.reverse_list(layer_output)
+        reverse_layer_output = utils.transpose(layer_output)
 
         # 得到各层各个神经元最大值和最小值
         layer_boundary = utils.get_boundary(reverse_layer_output)

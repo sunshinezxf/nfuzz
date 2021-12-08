@@ -88,13 +88,14 @@ y_test = y_test.tolist()
 
 x_test = np.array(x_test)
 y_test = np.array(y_test)
+
+
 # print(x_test.shape)
 # x_test=x_test.reshape(10000,28,28,1)
 # 解决方法：原因是输入的第一个dimension是bachsize，所以需要将数据reshape为(1，X, X, X)。
 
 # 载入模型
 # model = load_model('11.h5')
-
 
 
 # print(model.get_config())
@@ -104,7 +105,7 @@ def load_neuron(model, x_input):
     """
         计算k-multisection覆盖率
         :param model: 待测模型
-        :param x_input: 测试输入,例子。上面的x_test
+        :param x_input: 测试输入列表,例子。上面的x_test
         :return: csv_path:存放神经元上下界信息的路径列表（多个csv文件)
                 input_list : 待计算覆盖率的神经元信息列表（测试数据形成的神经元信息）
     """
@@ -121,16 +122,17 @@ def load_neuron(model, x_input):
 
     csv_path = []  # 存放神经元上下界信息的路径列表（多个csv文件)
     input_list = []  # 待计算覆盖率的神经元信息列表（测试数据形成的神经元信息）
-    all_output_list=[] # 所有输出
-    all_layer_boundary=[] # 所有边界值
+    all_output_list = []  # 所有输出
+    all_layer_boundary = []  # 所有边界值
 
     # 获取第一层输入的shape
     first_layer = model.get_layer(index=0)
     input_shape = first_layer.input_shape
+
     # 一般来说输入的shape是三维的
-    if len(input_shape) == 4:
-        print('x_input shape:',x_input.shape)
-        x_input = x_input.reshape(-1, x_input.shape[0], x_input.shape[1], x_input.shape[2])
+    # if len(input_shape) == 4:
+    #     print('x_input shape4:', x_input.shape)
+    #     x_input = x_input.reshape(-1, x_input.shape[0], x_input.shape[1], x_input.shape[2])
 
     # 取某一层的输出为输出新建为model，采用函数模型. todo:每个层都需要计算覆盖率吗，pool层可以不用
     for item in layers:
@@ -138,6 +140,7 @@ def load_neuron(model, x_input):
         layer_model = Model(inputs=model.input, outputs=model.get_layer(layer_name).output)
 
         # 获取各层输出信息
+        x_input=x_input.reshape(x_input.shape[0],x_input.shape[1],x_input.shape[2],1)
         layer_output = layer_model.predict(x_input)
         all_output_list.append(layer_output)
         print(layer_name)
@@ -145,8 +148,8 @@ def load_neuron(model, x_input):
         # print(len(layer_output), len(layer_output[0]))  # 二维数组
 
         # 翻转矩阵
-        if len(layer_output)>0:
-            reverse_layer_output = utils.reverse_list(layer_output)
+        if len(layer_output) > 0:
+            reverse_layer_output = utils.transpose(layer_output)
             # 得到各层各个神经元最大值和最小值
             layer_boundary = utils.get_boundary(reverse_layer_output)
             all_layer_boundary.append(layer_boundary)
@@ -173,7 +176,7 @@ def load_neuron(model, x_input):
                 input_list.append(data_size_input_list)
 
     print('execute---------')
-    return all_layer_boundary,all_output_list, input_list
+    return all_layer_boundary, all_output_list, input_list
 
 # x_test=x_test.reshape(-1,28,28,1)
 # model=load_model('../model/LeNet5.h5')

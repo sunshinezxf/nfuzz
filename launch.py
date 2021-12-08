@@ -54,7 +54,7 @@ def main():
                               batch_prioritization=batch_prioritizer)
 
     deep_hunter.process(batch_pool, model)
-    entropic.process(seeds,model)
+    # entropic.process(seeds,model)
 
 
 if __name__ == '__main__':

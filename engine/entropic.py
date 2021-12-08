@@ -38,7 +38,7 @@ def rand_pick(corpus, sum_energy=1):
     x = random.uniform(0, sum_energy)
     cum_prob = 0.0
     for seed in corpus:
-        cum_prob += seed.energy
+        cum_prob += seed.probability
         if x < cum_prob:
             return seed
 
@@ -76,12 +76,12 @@ def process(seed_corpus,model,species=10,max_loop=10):
         total = 0
         for t in seed_corpus:
             assign_energy(t)  # 初始化每个种子t的energy
-            total = total + t.energy
+            total = total + t.probability
             Y[t]={}  # 初始化local instance frequency，每个t对应一个字典
 
         # energy归一化
         for t in seed_corpus:
-            t.energy = t.energy / total
+            t.probability = t.probability / total
 
         # 以energy为概率从corpus中选取种子并进行mutate
         seed = rand_pick(seed_corpus)

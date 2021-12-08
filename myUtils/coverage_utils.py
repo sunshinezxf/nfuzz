@@ -2,6 +2,83 @@ import copy
 import numpy
 from scipy import special
 from myUtils import csv_utils
+from keras.models import Model
+
+def load_neuron(model, x_input):
+    """
+        加载神经元信息
+        :param model: 待测模型
+        :param x_input: 测试输入列表,例子。上面的x_test
+        :return: input_list : 待计算覆盖率的神经元信息列表（测试数据形成的神经元信息）
+    """
+
+    config = model.get_config()  # 详细信息
+
+    layers = config['layers']  # 各层的信息
+
+    print('load model successfully....')
+    print('config--------')
+    print(config)
+    print('layers------')
+    print(layers)
+
+    csv_path = []  # 存放神经元上下界信息的路径列表（多个csv文件)
+    input_list = []  # 待计算覆盖率的神经元信息列表（测试数据形成的神经元信息）
+    all_output_list = []  # 所有输出
+    all_layer_boundary = []  # 所有边界值
+
+    # 获取第一层输入的shape
+    first_layer = model.get_layer(index=0)
+    input_shape = first_layer.input_shape
+
+    # 一般来说输入的shape是三维的
+    # if len(input_shape) == 4:
+    #     print('x_input shape4:', x_input.shape)
+    #     x_input = x_input.reshape(-1, x_input.shape[0], x_input.shape[1], x_input.shape[2])
+
+    # 取某一层的输出为输出新建为model，采用函数模型. todo:每个层都需要计算覆盖率吗，pool层可以不用
+    for item in layers:
+        layer_name = item['config']['name']
+        layer_model = Model(inputs=model.input, outputs=model.get_layer(layer_name).output)
+
+        # 获取各层输出信息
+        x_input=x_input.reshape(x_input.shape[0],x_input.shape[1],x_input.shape[2],1)
+        layer_output = layer_model.predict(x_input)
+        all_output_list.append(layer_output)
+        print(layer_name,layer_output.shape)
+        # print(layer_output)
+        # print(len(layer_output), len(layer_output[0]))  # 二维数组
+
+        # 翻转矩阵
+        if len(layer_output) > 0:
+            reverse_layer_output = csv_utils.transpose(layer_output)
+            # 得到各层各个神经元最大值和最小值
+            layer_boundary = csv_utils.get_boundary(reverse_layer_output)
+            all_layer_boundary.append(layer_boundary)
+
+            # 将最大值最小值保存为csv文件 具体存放路径待定
+            # layer_boundary_list = utils.save_boundary_list(layer_boundary,'./csv/'+ layer_name + '_boundary.csv')
+            # csv_path.append(layer_name + '_boundary.csv')
+
+            # layer_output_list = utils.save_layer_output_list(layer_output, './csv/'+layer_name + '_output.csv')
+            # csv_path.append(layer_name + '_output.csv')
+
+            # print(layer_name + "_boundary_list", len(layer_boundary_list), ":::", len(layer_boundary_list[0]))
+
+            for size in range(len(layer_output)):
+                data_size_input_list = []
+                layer_sub_list = layer_output[size]
+
+                layer_sub_input_list = []
+
+                for neuron_sum in range(len(layer_sub_list)):
+                    layer_sub_input_list.append([layer_sub_list[neuron_sum]])
+                data_size_input_list.append(layer_sub_input_list)
+
+                input_list.append(data_size_input_list)
+
+    print('execute---------')
+    return all_layer_boundary, all_output_list, input_list
 
 
 def neuron_coverage(all_output_list, threshold=0.25):

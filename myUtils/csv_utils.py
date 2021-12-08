@@ -1,25 +1,21 @@
-# 工具类
-
 import csv
 import numpy as np
 import copy
 
 
-# 翻转列表
-def reverse_list(li):
+def transpose(li):
     """
-    翻转矩阵
-    :param li:待翻转列表
-    :return:翻转完成后的列表
+    矩阵转置
+    :param li:待转置列表矩阵
+    :return:
     """
-    reversed_list = [
+    transposed_list = [
         [li[i][j] for i in range(len(li))]
         for j in range(len(li[0]))
     ]
-    return reversed_list
+    return transposed_list
 
 
-# 获取列表中每一元素最大值和最小值
 def get_boundary(mylist):
     """
     获取列表中每一元素的最大值和最小值
@@ -39,7 +35,6 @@ def get_boundary(mylist):
     return boundary_list
 
 
-# 将各层神经元边界（上界、下界）保存到csv文件中
 def save_boundary_list(li, path):
     """
     将各层神经元边界（上界、下界）保存到csv文件中
@@ -52,7 +47,7 @@ def save_boundary_list(li, path):
         for row in li:
             writer.writerow(row)
 
-# 将各层神经元边界输出保存到csv文件中
+
 def save_layer_output_list(li, path):
     """
     将各层神经元输出保存到csv文件中
@@ -66,7 +61,6 @@ def save_layer_output_list(li, path):
             writer.writerow(row)
 
 
-# 从csv文件中获取各层个神经元边界值（上界和下界）
 def get_boundary_from_file(path):
     """
     从csv文件中获取各层个神经元边界值（上界和下界）
@@ -91,7 +85,6 @@ def get_boundary_from_file(path):
     return boundary_list
 
 
-# 从csv文件中获取各层个神经元输出
 def get_output_from_file(path):
     """
     从csv文件中获取各层个神经元输出
@@ -116,7 +109,6 @@ def get_output_from_file(path):
     return output_list
 
 
-# 获取多个csv文件
 def get_all_boundary_file(path_list):
     """
     获取多个csv文件
@@ -131,7 +123,6 @@ def get_all_boundary_file(path_list):
     return all_boundary_list
 
 
-# 获取多个csv文件
 def get_all_output_file(path_list):
     """
     获取多个csv文件
@@ -146,7 +137,6 @@ def get_all_output_file(path_list):
     return all_output_list
 
 
-# 将神经元信息列表转换为k-multisection
 def covert_to_k_multisection(k, input_list):
     """
     将神经元信息列表转换为k-multisection
@@ -178,7 +168,6 @@ def covert_to_k_multisection(k, input_list):
     return k_multisection_all_layer_list
 
 
-# 计算k_multisection总数
 def k_multisection_sum(input_list):
     neuron_sum = 0
     for layer in range(len(input_list)):
@@ -190,7 +179,6 @@ def k_multisection_sum(input_list):
     return neuron_sum
 
 
-# 获取覆盖标签信息列表
 def get_label_list(input_list):
     """
     获取覆盖标签信息列表
@@ -213,7 +201,6 @@ def get_label_list(input_list):
     return all_label_list
 
 
-# 判断单个神经元信息是否被过覆盖
 def is_neuron_coveraged(neuron_info_list, k_multisection_list):
     """
     判断单个神经元信息是否被过覆盖
@@ -233,9 +220,12 @@ def is_neuron_coveraged(neuron_info_list, k_multisection_list):
     return result, index
 
 
-# 获取神经元边界信息标签列表
 def get_boundary_coverage_label_list(input_list):
-
+    """
+    获取神经元边界信息标签列表
+    :param input_list:
+    :return:
+    """
     neuron_boundary_label_list = []
     for layer in range(len(input_list)):
         layer_info_list = input_list[layer]
@@ -252,7 +242,6 @@ def get_boundary_coverage_label_list(input_list):
     return neuron_boundary_label_list
 
 
-# 判断神经元信息是否超过上界或下界
 def is_upper_or_lower(neuron_info_list, boundary_list):
 
     """
@@ -276,7 +265,6 @@ def is_upper_or_lower(neuron_info_list, boundary_list):
     return result, flag
 
 
-# 获取top-k神经元信息标签列表
 def get_top_k_neuron_label_list(input_list):
     """
     获取top-k神经元信息标签列表
@@ -293,7 +281,6 @@ def get_top_k_neuron_label_list(input_list):
     return top_k_neuron_label_list
 
 
-# 获取列表中top-k值索引
 def get_top_k_index_list(k, input_list):
     """
     获取列表中top-k值索引
