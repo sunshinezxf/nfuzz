@@ -7,7 +7,6 @@ class AbstractCoverage(ABC):
     def __init__(self, model):
         self.model = model
         self.layers = self.get_layers_with_neurons()
-        self.coverage_dict = self.init_dict()
 
     @abstractmethod
     def update_coverage(self, input_data) -> dict:
@@ -19,7 +18,7 @@ class AbstractCoverage(ABC):
         pass
 
     @abstractmethod
-    def get_coverage(self):
+    def get_coverage(self) -> dict:
         """
         :return:对应的覆盖率
         """
@@ -43,11 +42,11 @@ class AbstractCoverage(ABC):
                 coverage_dict[(layer.name, index)] = False
         return coverage_dict
 
-    def get_model_outputs(self, layers, input_data):
+    def get_model_activations(self, input_data):
         """
         :return:所有中间层的输出
         """
-        intermediate_layer_model = Model(inputs=self.model.input, outputs=[layer.output for layer in layers])
+        intermediate_layer_model = Model(inputs=self.model.input, outputs=[layer.output for layer in self.layers])
         intermediate_layer_outputs = intermediate_layer_model.predict(input_data)
         return intermediate_layer_outputs
 

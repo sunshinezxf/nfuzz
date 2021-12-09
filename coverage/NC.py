@@ -8,15 +8,16 @@ class NeuronCoverages(AbstractCoverage):
 
     def __init__(self, model, activation_threshold=0.25):
         AbstractCoverage.__init__(self,model)
+        self.coverage_dict = self.init_dict()
         self.threshold = activation_threshold
 
     def update_coverage(self, input_data):
         input_data=self.reshape_input(input_data)
         layer_names = [layer.name for layer in self.layers]
 
-        intermediate_layer_outputs = self.get_model_outputs(self.layers, input_data)
+        intermediate_layer_activations = self.get_model_activations(input_data)
 
-        for layer_name, intermediate_layer_output in zip(layer_names, intermediate_layer_outputs):
+        for layer_name, intermediate_layer_output in zip(layer_names, intermediate_layer_activations):
             layer_activations = intermediate_layer_output[0]
             activations_shape = layer_activations.shape
             for neuron_index in range(self.neuron_nums(activations_shape)):
@@ -26,7 +27,11 @@ class NeuronCoverages(AbstractCoverage):
                 else:
                     self.coverage_dict[(layer_name, neuron_index)] = False
 
-    def get_coverage(self):
+    def get_coverage(self) -> dict:
         covered_neurons = sum(neuron for neuron in self.coverage_dict.values() if neuron)
         total_neurons = len(self.coverage_dict)
-        return covered_neurons / float(total_neurons)
+        return {
+            'total_neurons': total_neurons,
+            'covered_neurons': covered_neurons,
+            'neuron_coverage': covered_neurons / float(total_neurons)
+        }
