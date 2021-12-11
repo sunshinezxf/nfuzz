@@ -138,7 +138,6 @@ def batch_mutate(batch):
     :return:
     """
     valid_test = []
-    failed_test = []
     result_set = []
 
     for img_tuple in batch:
