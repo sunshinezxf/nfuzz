@@ -3,14 +3,14 @@ class Seed:
     对种子进行封装，定义比较函数，使之可以在优先队列中使用
     """
 
-    def __init__(self,seed,probability):
+    def __init__(self,image,label,probability=0):
         """
         封装种子element
-        :param seed: element type is '{fuzzedTimes, batch}'
-        :param probability:
+        :param probability:被选择的概率
         """
-        self.seed=seed
-        self.probability=probability
+        self.image=image
+        self.label=label
+        self.potential=probability
 
     def __lt__(self, other):
         """
@@ -18,10 +18,10 @@ class Seed:
         :param other:
         :return:
         """
-        if self.probability<other.probability:
+        if self.potential<other.potential:
             return False
         else:
             return True
 
     def val(self):
-        return self.seed
+        return self.image, self.label

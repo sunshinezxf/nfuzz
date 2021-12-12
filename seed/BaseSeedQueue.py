@@ -1,7 +1,6 @@
 import queue
-import numpy
 from seed.SeedQueue import SeedQueue
-
+from seed.Seed import Seed
 
 class BaseSeedQueue(SeedQueue):
     """
@@ -16,7 +15,7 @@ class BaseSeedQueue(SeedQueue):
     def __init__(self, seeds):
         self.queue = queue.Queue()
         for seed in seeds:
-            self.push(seed)
+            self.push(Seed(seed[0],seed[1]))
 
     def push(self, seed):
         """

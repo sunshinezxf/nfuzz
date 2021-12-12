@@ -1,11 +1,36 @@
-from myUtils import csv_utils
 from keras.models import load_model
-from keras.utils import plot_model
+from keras.datasets import mnist
 
-# model = load_model('../model/LeNet5.h5')
-# print(model.layers[0].input_shape)
-# print(model.layers[0].input_shape[0] is None)
-# dict={}
-# dict["test"]=[True,False,True]
-# print(sum(sum(section for section in neuron) for neuron in dict.values()))
-print(set([1,2,1,2,3]))
+
+def load_seed():
+    """
+    加载种子数据集
+    :return:
+    """
+    (x_train, y_train), (x_test, y_test) = mnist.load_data()
+    return x_train, y_train, x_test, y_test
+
+
+def pre_process(x_train, y_train):
+    """
+    对种子进行预处理预处理
+    :return:
+    """
+    seeds = []
+    for i in range(len(x_train)):
+        seed = (x_train[0], y_train[0])
+        seeds.append(seed)
+    return seeds
+
+
+# 加载种子
+x_train, y_train, x_test, y_test = load_seed()
+
+# 预处理
+seeds = pre_process(x_train, y_train)
+
+dict={}
+print(type(seeds[0]))
+dict[seeds[0]]='1'
+dict[seeds[1]]='2'
+print(dict.values())
